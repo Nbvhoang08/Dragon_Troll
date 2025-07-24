@@ -469,7 +469,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2705426447904559036}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a25c95ae786870d4eb4513230d6a182e, type: 3}
   m_Name: 
@@ -552,6 +552,7 @@ GameObject:
   - component: {fileID: 4455837711440217568}
   - component: {fileID: 2494984212513046076}
   - component: {fileID: 1209627478207176868}
+  - component: {fileID: 4455837711440217569}
   m_Layer: 0
   m_Name: Dragon
   m_TagString: Untagged
@@ -568,12 +569,39 @@ Transform:
   m_GameObject: {fileID: 2705426447904559036}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.93, y: 3.55, z: 0}
+  m_LocalPosition: {x: 0.42, y: -2.99, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4455837711440217569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2705426447904559036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dec58d7b6d903b419c5b3fb80bb5279, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pathPoints:
+  - {fileID: 1268361545}
+  - {fileID: 797331929}
+  - {fileID: 158719775}
+  - {fileID: 2000745621}
+  - {fileID: 1113280532}
+  - {fileID: 357485479}
+  - {fileID: 16171034}
+  - {fileID: 295412140}
+  pathType: 1
+  bodyPrefab: {fileID: 7264658061033286161, guid: d16d0aa3c4d1b2e40a91d5a91126c2e1, type: 3}
+  bodyCount: 20
+  spacing: 0.8
+  followSpeed: 10
+  moveSpeed: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

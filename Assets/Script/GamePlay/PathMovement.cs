@@ -95,7 +95,6 @@ public class PathMovement : MonoBehaviour
             }
         }
 
-        // Giới hạn lịch sử
         if (positionHistory.Count > bodyCount * spacing * 60)
         {
             positionHistory.RemoveAt(positionHistory.Count - 1);
