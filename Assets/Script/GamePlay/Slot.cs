@@ -16,6 +16,7 @@ public class Slot : MonoBehaviour
     private void Start()
     {
         bulletNumberText = GetComponentInChildren<TextMeshPro>();
+        spriteRenderer  = GetComponent<SpriteRenderer>();
         if (bulletNumberText != null)
         {
             bulletNumberText.text = "";

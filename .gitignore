@@ -4,3 +4,6 @@ Logs
 Temp
 UserSettings
 UserSettings
+.vs
+*.csproj
+Assembly-CSharp.csproj

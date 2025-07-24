@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d9d0113f9d26ed741a11612c70cdf3d0, type: 3}
   m_Color: {r: 0.97735846, g: 0.9772495, b: 0.96444994, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -137,8 +137,8 @@ MonoBehaviour:
   isHead: 1
   segmentSpacing: 1
   spriteRenderer: {fileID: 5199423113403940807}
-  normalColor: {r: 0, g: 1, b: 0, a: 1}
-  headColor: {r: 1, g: 0, b: 0, a: 1}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  headColor: {r: 1, g: 1, b: 1, a: 1}
   hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   destroyAnimationDuration: 0.3
   destroyEase: 27
