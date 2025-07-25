@@ -1,9 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
-
 public enum BusColor
 {
     Red,
@@ -22,3 +16,8 @@ public enum BusType
     Large
 }
 
+public enum BusDirection
+{
+    Up, Down, Left, Right,
+    UpLeft, UpRight, DownLeft, DownRight
+}

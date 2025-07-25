@@ -270,8 +270,16 @@ public class Bus : MonoBehaviour
         }
     }
 
+    public void SpriteConfigRotation() 
+    {
+        
+    
+    
+    }
 
-private void OnCollisionEnter2D(Collision2D collision)
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
        
         if (isShaking) return;
