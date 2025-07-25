@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2424799987189342400}
   - component: {fileID: -7003765485890204484}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: Circle 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: d9d0113f9d26ed741a11612c70cdf3d0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9ffeea9f3adc2b8488cd4fe11bccf9c7, type: 2}
   m_Color: {r: 0.97735846, g: 0.9772495, b: 0.96444994, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -134,11 +134,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   segmentIndex: 7
-  isHead: 1
+  isHead: 0
   segmentSpacing: 1
   spriteRenderer: {fileID: 5199423113403940807}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
-  headColor: {r: 1, g: 1, b: 1, a: 1}
+  headColor: {r: 1, g: 0, b: 0, a: 1}
   hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  destroyAnimationDuration: 0.3
-  destroyEase: 27
+  destroyAnimationDuration: 0.33
+  destroyEase: 28

@@ -6,3 +6,4 @@ UserSettings
 UserSettings
 .vs
 *.csproj
+Assembly-CSharp.csproj
