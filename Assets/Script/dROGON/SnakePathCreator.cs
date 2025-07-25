@@ -6,6 +6,10 @@ public class SnakePathCreator : MonoBehaviour
 {
     [Header("Path Settings")]
     public Transform[] pathPoints;
+
+    [Tooltip("Rotation (Euler angles) for each corresponding path point.")]
+    public Vector3[] pathRotations;
+
     public LineRenderer pathLineRenderer;
     public Color pathColor = Color.white;
     public float pathWidth = 0.1f;
@@ -19,25 +23,21 @@ public class SnakePathCreator : MonoBehaviour
 
     void Awake()
     {
-        // Khởi tạo sớm hơn trong Awake
         InitializePath();
     }
 
     void Start()
     {
-        // Đảm bảo đã được khởi tạo
         if (!isInitialized)
         {
             InitializePath();
         }
-
         VisualizePathPoints();
     }
 
     public void InitializePath()
     {
         if (isInitialized) return;
-
         CreatePath();
         isInitialized = true;
     }
@@ -47,13 +47,16 @@ public class SnakePathCreator : MonoBehaviour
         if (pathPoints == null || pathPoints.Length < 2)
         {
             Debug.LogError("Cần ít nhất 2 điểm để tạo đường đi! Vui lòng gán pathPoints trong Inspector.");
-
-            // Tạo path mặc định nếu không có
             CreateDefaultPath();
             return;
         }
 
-        // Kiểm tra xem có pathPoint nào bị null không
+        if (pathRotations == null || pathRotations.Length != pathPoints.Length)
+        {
+            Debug.LogWarning($"pathRotations is not set up correctly. Resizing to match pathPoints. Please set the rotation values in the Inspector.");
+            System.Array.Resize(ref pathRotations, pathPoints.Length);
+        }
+
         List<Vector3> validPositions = new List<Vector3>();
         for (int i = 0; i < pathPoints.Length; i++)
         {
@@ -76,7 +79,6 @@ public class SnakePathCreator : MonoBehaviour
 
         pathPositions = validPositions.ToArray();
 
-        // Tạo LineRenderer để hiển thị đường đi
         if (pathLineRenderer != null)
         {
             pathLineRenderer.positionCount = pathPositions.Length;
@@ -90,7 +92,6 @@ public class SnakePathCreator : MonoBehaviour
 
     void CreateDefaultPath()
     {
-        // Tạo path mặc định từ trái sang phải
         pathPositions = new Vector3[]
         {
             new Vector3(-8, 0, 0),
@@ -100,16 +101,17 @@ public class SnakePathCreator : MonoBehaviour
             new Vector3(8, 0, 0)
         };
 
+        pathRotations = new Vector3[pathPositions.Length];
+
         Debug.Log("Đã tạo path mặc định. Hãy thiết lập pathPoints trong Inspector để tùy chỉnh đường đi.");
     }
 
     void VisualizePathPoints()
     {
         if (!showPathPoints || pathPointPrefab == null || pathPositions == null) return;
-
         for (int i = 0; i < pathPositions.Length; i++)
         {
-            GameObject point = Instantiate(pathPointPrefab, pathPositions[i], Quaternion.identity);
+            GameObject point = Instantiate(pathPointPrefab, pathPositions[i], Quaternion.Euler(pathRotations[i]));
             point.name = "PathPoint_" + i;
             point.transform.SetParent(transform);
         }
@@ -117,42 +119,26 @@ public class SnakePathCreator : MonoBehaviour
 
     public Vector3[] GetPathPositions()
     {
-        if (!isInitialized)
-        {
-            InitializePath();
-        }
-
+        if (!isInitialized) InitializePath();
         return pathPositions;
+    }
+
+    public Vector3[] GetPathRotations()
+    {
+        if (!isInitialized) InitializePath();
+        return pathRotations;
     }
 
     public float GetPathLength()
     {
-        if (!isInitialized)
-        {
-            InitializePath();
-        }
-
-        if (pathPositions == null || pathPositions.Length < 2)
-        {
-            Debug.LogWarning("PathPositions không hợp lệ trong GetPathLength!");
-            return 0f;
-        }
+        if (!isInitialized) InitializePath();
+        if (pathPositions == null || pathPositions.Length < 2) return 0f;
 
         float totalLength = 0f;
         for (int i = 1; i < pathPositions.Length; i++)
         {
             totalLength += Vector3.Distance(pathPositions[i - 1], pathPositions[i]);
         }
-
         return totalLength;
-    }
-
-    // Method để debug thông tin path
-    public void DebugPathInfo()
-    {
-        Debug.Log($"Path initialized: {isInitialized}");
-        Debug.Log($"PathPositions count: {(pathPositions != null ? pathPositions.Length : 0)}");
-        Debug.Log($"PathPoints count: {(pathPoints != null ? pathPoints.Length : 0)}");
-        Debug.Log($"Path length: {GetPathLength()}");
     }
 }

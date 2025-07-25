@@ -27,13 +27,11 @@ public class SnakeSegment : MonoBehaviour
         parentSnake = GetComponentInParent<Snake>();
         originalScale = transform.localScale;
 
-        // Thiết lập màu sắc
         if (spriteRenderer != null)
         {
             spriteRenderer.color = isHead ? headColor : normalColor;
         }
 
-        // Thêm Collider2D để có thể click
         if (GetComponent<Collider2D>() == null)
         {
             CircleCollider2D collider = gameObject.AddComponent<CircleCollider2D>();
@@ -68,10 +66,8 @@ public class SnakeSegment : MonoBehaviour
     public void DestroySegment()
     {
         if (isDestroyed) return;
-
         isDestroyed = true;
 
-        // Animation phá hủy
         transform.DOScale(Vector3.zero, destroyAnimationDuration)
             .SetEase(destroyEase)
             .OnComplete(() =>
@@ -83,7 +79,6 @@ public class SnakeSegment : MonoBehaviour
                 Destroy(gameObject);
             });
 
-        // Hiệu ứng màu sắc
         if (spriteRenderer != null)
         {
             spriteRenderer.DOColor(Color.red, destroyAnimationDuration * 0.5f);
@@ -114,6 +109,23 @@ public class SnakeSegment : MonoBehaviour
         if (!isDestroyed)
         {
             transform.DOMove(newPosition, duration);
+        }
+    }
+
+    public void UpdateRotation(Vector3 newEulerAngles)
+    {
+        if (!isDestroyed)
+        {
+            transform.rotation = Quaternion.Euler(newEulerAngles);
+        }
+    }
+
+    // ĐÃ THÊM: Phương thức mới để cập nhật sorting order
+    public void UpdateSortingOrder(int order)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sortingOrder = order;
         }
     }
 }

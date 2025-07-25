@@ -625,12 +625,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a599a69960c0cc4a9cf3dce06540e9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controlPoints:
-  - {fileID: 486853528}
-  - {fileID: 1546049784}
-  - {fileID: 43684250}
-  - {fileID: 107794187}
-  gizmosPosition: {x: 0, y: 0}
 --- !u!1 &775822230
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,74 +895,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1433553711}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1356324513
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1356324516}
-  - component: {fileID: 1356324515}
-  - component: {fileID: 1356324514}
-  m_Layer: 0
-  m_Name: EventSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1356324514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356324513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
---- !u!114 &1356324515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356324513}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
---- !u!4 &1356324516
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356324513}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1433553709
 GameObject:
   m_ObjectHideFlags: 0
@@ -1143,26 +1069,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8578a70c20c74343a0bba00588fa844, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  routes:
-  - {fileID: 724571101}
-  - {fileID: 2112902051}
-  segmentPrefab: {fileID: 8772537537874336679, guid: f4a6568e27d10b944b7a3546e392002c, type: 3}
-  segmentSpacing: 1
-  speed: 2
-  colorSettings:
-  - colorName: Green
-    count: 3
-  - colorName: Red
-    count: 3
-  - colorName: Yellow
-    count: 2
-  - colorName: Orange
-    count: 2
-  segmentColors: []
-  segments: []
-  routeToGo: 0
-  segmentIndex: 0
-  tParam: 0
 --- !u!4 &1758197555
 Transform:
   m_ObjectHideFlags: 0
@@ -1257,12 +1163,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a599a69960c0cc4a9cf3dce06540e9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controlPoints:
-  - {fileID: 435880736}
-  - {fileID: 775822231}
-  - {fileID: 219229283}
-  - {fileID: 578269166}
-  gizmosPosition: {x: 0, y: 0}
 --- !u!114 &1209627478207176868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1275,23 +1175,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a25c95ae786870d4eb4513230d6a182e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathPoints:
-  - {fileID: 1268361545}
-  - {fileID: 797331929}
-  - {fileID: 158719775}
-  - {fileID: 2000745621}
-  - {fileID: 1113280532}
-  - {fileID: 357485479}
-  - {fileID: 16171034}
-  - {fileID: 295412140}
-  duration: 10
-  pathType: 1
-  loop: 0
-  bodyPrefab: {fileID: 8772537537874336679, guid: f4a6568e27d10b944b7a3546e392002c, type: 3}
-  bodyCount: 7
-  spacing: 0.5
-  bodyParts: []
-  positionHistory: []
 --- !u!212 &2494984212513046076
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1400,5 +1283,4 @@ SceneRoots:
   - {fileID: 2112902051}
   - {fileID: 1758197555}
   - {fileID: 1608195730}
-  - {fileID: 1356324516}
   - {fileID: 324075106}

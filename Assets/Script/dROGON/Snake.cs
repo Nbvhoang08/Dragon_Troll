@@ -5,10 +5,10 @@ using DG.Tweening;
 public class Snake : MonoBehaviour
 {
     [Header("Snake Settings")]
-    public int initialSegmentCount = 10;
+    public int initialSegmentCount = 11; // ĐÃ CẬP NHẬT: Thay đổi giá trị mặc định để khớp với ví dụ
     public float segmentSpacing = 1f;
     public float moveSpeed = 2f;
-    public float reverseSpeed = 1.5f; // Tốc độ đi lùi
+    public float reverseSpeed = 1.5f;
 
     [Header("Prefabs")]
     public GameObject segmentPrefab;
@@ -19,25 +19,23 @@ public class Snake : MonoBehaviour
 
     private List<SnakeSegment> segments = new List<SnakeSegment>();
     private Vector3[] pathPositions;
+    private Vector3[] pathRotations;
     private float pathLength;
     private float currentPathProgress = 0f;
     private bool isMoving = true;
-    private bool isReversing = false; // Trạng thái đi lùi
+    private bool isReversing = false;
 
     [Header("Game Events")]
     public UnityEngine.Events.UnityEvent OnReachEnd;
 
     void Start()
     {
-        // Đợi 1 frame để đảm bảo PathCreator đã được khởi tạo
         Invoke(nameof(InitializeSnake), 0.01f);
     }
 
     void Update()
     {
-        // Xử lý input
         HandleInput();
-
         if (isMoving && segments.Count > 0 && pathPositions != null)
         {
             MoveSnake();
@@ -55,15 +53,7 @@ public class Snake : MonoBehaviour
     public void ToggleReverse()
     {
         isReversing = !isReversing;
-
-        if (isReversing)
-        {
-            Debug.Log("Rắn đang đi lùi!");
-        }
-        else
-        {
-            Debug.Log("Rắn đang đi tiến!");
-        }
+        Debug.Log(isReversing ? "Rắn đang đi lùi!" : "Rắn đang đi tiến!");
     }
 
     void InitializeSnake()
@@ -74,22 +64,22 @@ public class Snake : MonoBehaviour
             return;
         }
 
-        // Đảm bảo PathCreator đã được khởi tạo
         pathCreator.InitializePath();
-
         pathPositions = pathCreator.GetPathPositions();
+        pathRotations = pathCreator.GetPathRotations();
         pathLength = pathCreator.GetPathLength();
 
-        // Kiểm tra xem path có hợp lệ không
-        if (pathPositions == null || pathPositions.Length < 2)
+        if (pathRotations == null || pathPositions.Length != pathRotations.Length)
         {
-            Debug.LogError("PathPositions không hợp lệ! Kiểm tra PathCreator setup.");
+            Debug.LogError("PathRotations không được thiết lập hoặc kích thước không khớp với pathPositions. Kiểm tra lại PathCreator.");
+            enabled = false;
             return;
         }
 
-        if (pathLength <= 0)
+        if (pathPositions == null || pathPositions.Length < 2 || pathLength <= 0)
         {
-            Debug.LogError("PathLength không hợp lệ! Kiểm tra PathCreator setup.");
+            Debug.LogError("Path không hợp lệ! Kiểm tra PathCreator setup.");
+            enabled = false;
             return;
         }
 
@@ -100,22 +90,8 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < initialSegmentCount; i++)
         {
-            GameObject segmentObj;
-
-            if (i == 0)
-            {
-                segmentObj = Instantiate(headPrefab != null ? headPrefab : segmentPrefab, transform);
-            }
-            else
-            {
-                segmentObj = Instantiate(segmentPrefab, transform);
-            }
-
-            SnakeSegment segment = segmentObj.GetComponent<SnakeSegment>();
-            if (segment == null)
-            {
-                segment = segmentObj.AddComponent<SnakeSegment>();
-            }
+            GameObject segmentObj = Instantiate(i == 0 && headPrefab != null ? headPrefab : segmentPrefab, transform);
+            SnakeSegment segment = segmentObj.GetComponent<SnakeSegment>() ?? segmentObj.AddComponent<SnakeSegment>();
 
             segment.SetSegmentIndex(i);
             segment.SetAsHead(i == 0);
@@ -123,68 +99,54 @@ public class Snake : MonoBehaviour
 
             Vector3 startPos = GetPositionOnPath(-i * segmentSpacing / pathLength);
             segmentObj.transform.position = startPos;
-
             segments.Add(segment);
         }
+
+        // ĐÃ THÊM: Cập nhật sorting order sau khi tạo rắn
+        UpdateSegmentSortingOrders();
     }
 
     void MoveSnake()
     {
-        // Kiểm tra null trước khi sử dụng
-        if (pathPositions == null || pathLength <= 0)
-        {
-            Debug.LogWarning("PathPositions hoặc PathLength không hợp lệ!");
-            return;
-        }
+        if (pathPositions == null || pathLength <= 0) return;
 
-        // Tính toán tốc độ dựa trên hướng di chuyển
         float currentSpeed = isReversing ? reverseSpeed : moveSpeed;
         float speedMultiplier = isReversing ? -1f : 1f;
-
         currentPathProgress += (currentSpeed / pathLength) * Time.deltaTime * speedMultiplier;
 
-        // Kiểm tra giới hạn
         if (currentPathProgress >= 1f)
         {
             currentPathProgress = 1f;
-            if (!isReversing) // Chỉ kết thúc game khi đi tiến và đến cuối path
+            if (!isReversing)
             {
                 isMoving = false;
                 OnReachEnd?.Invoke();
-                Debug.Log("Rắn đã đến thành! Game Over!");
                 return;
             }
         }
         else if (currentPathProgress <= 0f)
         {
             currentPathProgress = 0f;
-            // Có thể thêm logic khi rắn về đến điểm bắt đầu
         }
 
-        // Cập nhật vị trí cho từng segment
         for (int i = 0; i < segments.Count; i++)
         {
             if (segments[i] == null || segments[i].IsDestroyed()) continue;
 
             float segmentProgress = currentPathProgress - (i * segmentSpacing / pathLength);
+
             Vector3 targetPosition = GetPositionOnPath(segmentProgress);
+            Vector3 targetRotation = GetRotationOnPath(segmentProgress);
+
             segments[i].UpdatePosition(targetPosition, 0.1f);
+            segments[i].UpdateRotation(targetRotation);
         }
     }
 
     Vector3 GetPositionOnPath(float progress)
     {
-        // Kiểm tra null và empty array
-        if (pathPositions == null || pathPositions.Length == 0)
-        {
-            Debug.LogError("PathPositions is null or empty!");
-            return Vector3.zero;
-        }
-
-        if (pathPositions.Length == 1)
-        {
-            return SetZToZero(pathPositions[0]);
-        }
+        if (pathPositions == null || pathPositions.Length == 0) return Vector3.zero;
+        if (pathPositions.Length == 1) return SetZToZero(pathPositions[0]);
 
         progress = Mathf.Clamp01(progress);
 
@@ -193,21 +155,43 @@ public class Snake : MonoBehaviour
 
         float totalLength = 0f;
         float targetLength = progress * pathLength;
+        for (int i = 1; i < pathPositions.Length; i++)
+        {
+            float segmentLength = Vector3.Distance(pathPositions[i - 1], pathPositions[i]);
+            if (totalLength + segmentLength >= targetLength)
+            {
+                float p = segmentLength > 0 ? (targetLength - totalLength) / segmentLength : 0;
+                return SetZToZero(Vector3.Lerp(pathPositions[i - 1], pathPositions[i], p));
+            }
+            totalLength += segmentLength;
+        }
+        return SetZToZero(pathPositions[pathPositions.Length - 1]);
+    }
+
+    Vector3 GetRotationOnPath(float progress)
+    {
+        if (pathRotations == null || pathRotations.Length == 0) return Vector3.zero;
+        if (pathRotations.Length == 1) return pathRotations[0];
+
+        progress = Mathf.Clamp01(progress);
+
+        if (progress <= 0f) return pathRotations[0];
+        if (progress >= 1f) return pathRotations[pathRotations.Length - 1];
+
+        float totalLength = 0f;
+        float targetLength = progress * pathLength;
 
         for (int i = 1; i < pathPositions.Length; i++)
         {
             float segmentLength = Vector3.Distance(pathPositions[i - 1], pathPositions[i]);
-
             if (totalLength + segmentLength >= targetLength)
             {
-                float segmentProgress = segmentLength > 0 ? (targetLength - totalLength) / segmentLength : 0;
-                return SetZToZero(Vector3.Lerp(pathPositions[i - 1], pathPositions[i], segmentProgress));
+                return pathRotations[i - 1];
             }
-
             totalLength += segmentLength;
         }
 
-        return SetZToZero(pathPositions[pathPositions.Length - 1]);
+        return pathRotations[pathRotations.Length - 1];
     }
 
     Vector3 SetZToZero(Vector3 pos)
@@ -218,21 +202,8 @@ public class Snake : MonoBehaviour
 
     public void OnSegmentDestroyed(int segmentIndex)
     {
-        SnakeSegment destroyedSegment = null;
-        for (int i = 0; i < segments.Count; i++)
-        {
-            if (segments[i] != null && segments[i].segmentIndex == segmentIndex)
-            {
-                destroyedSegment = segments[i];
-                break;
-            }
-        }
-
-        if (destroyedSegment == null) return;
-
         ReconnectSegments(segmentIndex);
 
-        // Thông báo cho GameManager
         if (GameManagerExtension.Instance != null)
         {
             GameManagerExtension.Instance.NotifySegmentDestroyed();
@@ -242,15 +213,13 @@ public class Snake : MonoBehaviour
     void ReconnectSegments(int destroyedIndex)
     {
         List<SnakeSegment> newSegments = new List<SnakeSegment>();
-
-        for (int i = 0; i < segments.Count; i++)
+        foreach (var segment in segments)
         {
-            if (segments[i] != null && !segments[i].IsDestroyed())
+            if (segment != null && !segment.IsDestroyed())
             {
-                newSegments.Add(segments[i]);
+                newSegments.Add(segment);
             }
         }
-
         segments = newSegments;
 
         if (segments.Count == 0)
@@ -265,7 +234,9 @@ public class Snake : MonoBehaviour
             segments[i].SetAsHead(i == 0);
         }
 
-        // Kiểm tra pathLength trước khi sử dụng
+        // ĐÃ THÊM: Cập nhật sorting order sau khi kết nối lại
+        UpdateSegmentSortingOrders();
+
         if (pathLength > 0)
         {
             currentPathProgress -= (segmentSpacing * 1f / pathLength);
@@ -273,39 +244,29 @@ public class Snake : MonoBehaviour
         }
     }
 
-    public void StopSnake()
+    // ĐÃ THÊM: Phương thức mới để cập nhật sorting order
+    void UpdateSegmentSortingOrders()
     {
-        isMoving = false;
+        if (segments == null) return;
+
+        int totalSegments = segments.Count;
+        for (int i = 0; i < totalSegments; i++)
+        {
+            if (segments[i] != null)
+            {
+                // Công thức: (Tổng số đốt + 1) - chỉ số hiện tại (0-based)
+                // Ví dụ: 11 đốt -> (11+1)-0=12 cho đầu, (11+1)-10=2 cho đuôi
+                int sortingOrder = (totalSegments + 1) - i;
+                segments[i].UpdateSortingOrder(sortingOrder);
+            }
+        }
     }
 
-    public void StartSnake()
-    {
-        isMoving = true;
-    }
-
-    public int GetSegmentCount()
-    {
-        return segments.Count;
-    }
-
-    // Các method mới để kiểm soát hướng di chuyển
-    public bool IsReversing()
-    {
-        return isReversing;
-    }
-
-    public void SetReverse(bool reverse)
-    {
-        isReversing = reverse;
-    }
-
-    public void ForceForward()
-    {
-        isReversing = false;
-    }
-
-    public void ForceReverse()
-    {
-        isReversing = true;
-    }
+    public void StopSnake() => isMoving = false;
+    public void StartSnake() => isMoving = true;
+    public int GetSegmentCount() => segments.Count;
+    public bool IsReversing() => isReversing;
+    public void SetReverse(bool reverse) => isReversing = reverse;
+    public void ForceForward() => isReversing = false;
+    public void ForceReverse() => isReversing = true;
 }
