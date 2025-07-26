@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
 
@@ -10,17 +8,23 @@ public class Slot : MonoBehaviour
     public bool isOccupied = false;
     public Vector3 lowerPoint;
     [SerializeField] private float raycastDistance = 5f;
-    public SpriteRenderer spriteRenderer;
-    private TextMeshPro bulletNumberText;
+    public Image bulletImage;
+    [HideInInspector]public TextMeshProUGUI bulletNumberText;
     public int bulletNumber = 0;
+    public Canon canon;
+
+
     private void Start()
     {
-        bulletNumberText = GetComponentInChildren<TextMeshPro>();
-        spriteRenderer  = GetComponent<SpriteRenderer>();
+        canon = GetComponentInChildren<Canon>();
+        canon.gameObject.SetActive(false);
+        bulletNumberText = GetComponentInChildren<TextMeshProUGUI>();
         if (bulletNumberText != null)
         {
             bulletNumberText.text = "";
+            bulletNumberText.gameObject.SetActive(false);
         }
+       
         Vector2 origin = transform.position;
         Vector2 direction = -transform.up.normalized;
         Vector2 end = origin + direction * raycastDistance;
@@ -37,33 +41,12 @@ public class Slot : MonoBehaviour
             Debug.DrawLine(origin, end, Color.red, 1f);
         }
     }
-    public void OnMouseDown()
-    {
-        if (isOccupied)
-        {
-            if (bulletNumber > 0)
-            {
-                bulletNumber--;
-                if (bulletNumberText != null)
-                {
-                    bulletNumberText.text = bulletNumber.ToString();
-                }
-                if (bulletNumber <= 0)
-                {
-                    if (bulletNumberText != null)
-                    {
-                        bulletNumberText.text = "";
-                    }
-                    isOccupied = false;
-                }
-            }
-                
-        }
-    }
+    
 
     public void SetOccupied(bool occupied)
     {
         isOccupied = occupied;
+        
     }
     private Vector2 GetIntersectionWithCenterLine(Vector2 rayOrigin, Vector2 rayDir, Bounds bounds)
     {
@@ -111,26 +94,18 @@ public class Slot : MonoBehaviour
     }
     public void OnOccupied(BusColor busColor , BusType busType) 
     {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = busColor switch
-            {
-                BusColor.Red => Color.red,
-                BusColor.Blue => Color.blue,
-                BusColor.Green => Color.green,
-                BusColor.Yellow => Color.yellow,
-                BusColor.Purple => new Color(0.5f, 0f, 0.5f),
-                BusColor.Pink => new Color(1f, 0.75f, 0.8f),
-                BusColor.Brown => new Color(0.6f, 0.4f, 0.2f),
-                BusColor.Cyan => new Color(0f, 1f, 1f),
-                _ => Color.white
-            };
-        }
+        canon.gameObject.SetActive(true);
+        CanonVisualData data = canon.canonData.GetVisualData(busColor);
+        canon.CanonSpriteConfig(data);
+        bulletImage.sprite = data.AmmoImage;
+        canon.bulletSprite = data.bulletSprite;
+        bulletNumberText.gameObject.SetActive(true);
+        bulletNumber = Constants.BulletAmount[(int)busType];
+        canon.StartFiringLoop(bulletNumber);
         if (bulletNumberText != null)
         {
             bulletNumberText.text = Constants.BulletAmount[(int)busType].ToString();
-            bulletNumber = Constants.BulletAmount[(int)busType];  
-        } 
-
+        }
+        
     }
 }

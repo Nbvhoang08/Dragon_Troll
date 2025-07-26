@@ -22,13 +22,13 @@ public class Bus : MonoBehaviour
     private int _currentIndex = 0;
     private Vector3 startPosition;
     private Collider2D _collider;
-    public BusColor busColor;
-    public BusType busType;
+    private BusVisual _busVisual;   
 
     void Start()
     {
         _collider = GetComponent<Collider2D>();
         startPosition = transform.position;
+        _busVisual = GetComponent<BusVisual>();
     }
 
     private void OnMouseDown()
@@ -214,9 +214,9 @@ public class Bus : MonoBehaviour
         if (_currentIndex >= _finalPath.Count - 1)
         {
             isMoving = false;
-            AnimationFadeOut(() =>
+            _busVisual.AnimationFadeOut(() =>
             {
-                targetSlot.OnOccupied(busColor, busType);
+                targetSlot.OnOccupied(_busVisual.busColor, _busVisual.busType);
                 transform.position = startPosition; // Trả về vị trí ban đầu
             });
             
@@ -231,7 +231,7 @@ public class Bus : MonoBehaviour
         Vector3 direction = (to - from).normalized;
         Quaternion targetRot = Quaternion.FromToRotation(Vector3.up, direction); // từ up -> direction
 
-        transform.DORotateQuaternion(targetRot, 0.01f);
+        transform.DORotateQuaternion(targetRot, 0.01f).OnComplete(()=>_busVisual.VisualConfig());
 
         transform.DOMove(to, duration).SetEase(Ease.Linear).OnComplete(() =>
         {
@@ -239,45 +239,6 @@ public class Bus : MonoBehaviour
             MoveToNextPoint();
         });
     }
-
-    public float fadeDuration = 0.5f;
-
-    public void AnimationFadeOut(System.Action onComplete = null)
-    {
-        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
-
-        int completedCount = 0;
-        int total = spriteRenderers.Length;
-
-        if (total == 0)
-        {
-            onComplete?.Invoke();
-            return;
-        }
-
-        foreach (var sr in spriteRenderers)
-        {
-            sr.DOFade(0f, fadeDuration)
-              .SetEase(Ease.OutQuad)
-              .OnComplete(() =>
-              {
-                  completedCount++;
-                  if (completedCount == total)
-                  {
-                      onComplete?.Invoke();
-                  }
-              });
-        }
-    }
-
-    public void SpriteConfigRotation() 
-    {
-        
-    
-    
-    }
-
-
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

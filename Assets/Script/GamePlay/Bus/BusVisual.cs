@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using DG.Tweening;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,13 +10,16 @@ using UnityEditor;
 [ExecuteAlways]
 public class BusVisual : MonoBehaviour
 {
-    public SpriteRenderer BottomSprite;
-    public SpriteRenderer TopSprite;
+   
     public BusColor busColor;
     public BusType busType;
     public BusVisualData visualData;
 
     [HideInInspector][SerializeField] private float _lastAngle = -999f;
+
+    public SpriteRenderer BottomSprite;
+    public SpriteRenderer TopSprite;
+
 
     public void VisualConfig()
     {
@@ -22,7 +27,7 @@ public class BusVisual : MonoBehaviour
 
         float angle = transform.eulerAngles.z;
         BusDirection dir = GetBusDirection(angle);
-
+        
         var spriteData = visualData.GetSprites(busType, busColor, dir);
         if (spriteData != null)
         {
@@ -47,7 +52,25 @@ public class BusVisual : MonoBehaviour
             }
         }
     }
-    
+    public void AnimationFadeOut(System.Action onComplete = null)
+    {
+        Sequence seq = DOTween.Sequence();
+
+        Vector3 localOffset = new Vector3(0.7f, 0f, 0f);
+        Vector3 targetLocalPos = TopSprite.transform.localPosition + localOffset;
+
+        seq.Append(TopSprite.transform.DOLocalMove(targetLocalPos, 0.3f).SetEase(Ease.Linear));
+
+        seq.AppendCallback(() =>
+        {
+            TopSprite.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
+            BottomSprite.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
+        });
+
+        seq.AppendInterval(0.2f);
+        seq.OnComplete(() => onComplete?.Invoke());
+    }
+
 
     private BusDirection GetBusDirection(float angle)
     {
@@ -68,7 +91,6 @@ public class BusVisual : MonoBehaviour
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        // Bọc delayCall để tránh lỗi từ Unity Editor
         EditorApplication.delayCall += () =>
         {
             if (this == null || visualData == null)

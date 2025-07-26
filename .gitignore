@@ -7,3 +7,5 @@ UserSettings
 .vs
 *.csproj
 Assembly-CSharp.csproj
+ProjectSettings/ProjectVersion.txt
+*.csproj
