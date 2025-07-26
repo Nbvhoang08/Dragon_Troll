@@ -1,3 +1,4 @@
+// SnakeSegment.cs (Không đổi)
 using UnityEngine;
 using DG.Tweening;
 
@@ -5,13 +6,11 @@ public class SnakeSegment : MonoBehaviour
 {
     [Header("Segment Settings")]
     public int segmentIndex;
-    public bool isHead = false;
+    public SegmentType segmentType = SegmentType.Red;
     public float segmentSpacing = 1f;
 
     [Header("Visual Settings")]
     public SpriteRenderer spriteRenderer;
-    public Color normalColor = Color.green;
-    public Color headColor = Color.red;
     public Color hoverColor = Color.yellow;
 
     [Header("Animation Settings")]
@@ -29,7 +28,8 @@ public class SnakeSegment : MonoBehaviour
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = isHead ? headColor : normalColor;
+            spriteRenderer.sprite = segmentType.GetSprite();
+            spriteRenderer.color = Color.white;
         }
 
         if (GetComponent<Collider2D>() == null)
@@ -41,7 +41,7 @@ public class SnakeSegment : MonoBehaviour
 
     void OnMouseEnter()
     {
-        if (!isDestroyed && !isHead && spriteRenderer != null)
+        if (!isDestroyed && segmentType.IsDestructible() && spriteRenderer != null)
         {
             spriteRenderer.color = hoverColor;
         }
@@ -49,15 +49,15 @@ public class SnakeSegment : MonoBehaviour
 
     void OnMouseExit()
     {
-        if (!isDestroyed && !isHead && spriteRenderer != null)
+        if (!isDestroyed && segmentType.IsDestructible() && spriteRenderer != null)
         {
-            spriteRenderer.color = normalColor;
+            spriteRenderer.color = Color.white;
         }
     }
 
     void OnMouseDown()
     {
-        if (!isDestroyed && !isHead)
+        if (!isDestroyed && segmentType.IsDestructible())
         {
             DestroySegment();
         }
@@ -65,7 +65,7 @@ public class SnakeSegment : MonoBehaviour
 
     public void DestroySegment()
     {
-        if (isDestroyed) return;
+        if (isDestroyed || !segmentType.IsDestructible()) return;
         isDestroyed = true;
 
         transform.DOScale(Vector3.zero, destroyAnimationDuration)
@@ -90,19 +90,19 @@ public class SnakeSegment : MonoBehaviour
         segmentIndex = index;
     }
 
-    public void SetAsHead(bool head)
+    public void SetSegmentType(SegmentType type)
     {
-        isHead = head;
+        segmentType = type;
         if (spriteRenderer != null)
         {
-            spriteRenderer.color = isHead ? headColor : normalColor;
+            spriteRenderer.sprite = segmentType.GetSprite();
+            spriteRenderer.color = Color.white;
         }
     }
 
-    public bool IsDestroyed()
-    {
-        return isDestroyed;
-    }
+    public SegmentType GetSegmentType() => segmentType;
+    public bool IsHead() => segmentType == SegmentType.Head;
+    public bool IsDestroyed() => isDestroyed;
 
     public void UpdatePosition(Vector3 newPosition, float duration = 0.1f)
     {
@@ -120,7 +120,6 @@ public class SnakeSegment : MonoBehaviour
         }
     }
 
-    // ĐÃ THÊM: Phương thức mới để cập nhật sorting order
     public void UpdateSortingOrder(int order)
     {
         if (spriteRenderer != null)
