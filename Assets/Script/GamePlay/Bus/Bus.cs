@@ -64,6 +64,7 @@ public class Bus : MonoBehaviour
     private void MoveToPoint(Vector2 target)
     {
         isMoving = true;
+        SoundManager.Instance.Play(Constants.Moving);
         Vector3 target3D = new Vector3(target.x, target.y, transform.position.z);
         float distance = Vector3.Distance(transform.position, target3D);
         float duration = distance / moveSpeed;
@@ -214,6 +215,7 @@ public class Bus : MonoBehaviour
         if (_currentIndex >= _finalPath.Count - 1)
         {
             isMoving = false;
+            SoundManager.Instance.Stop(Constants.Moving);
             _busVisual.AnimationFadeOut(() =>
             {
                 targetSlot.OnOccupied(_busVisual.busColor, _busVisual.busType);
@@ -262,6 +264,7 @@ public class Bus : MonoBehaviour
             targetSlot = null;
             if (isMoving)
             {
+                SoundManager.Instance.Stop(Constants.Moving);
                 Vector2 contactPoint = collision.GetContact(0).point;
                 SoundManager.Instance.Play(Constants.BoxCrashSound);
                 Effect collisionEffect = Pool.Instance.collisionEffect;

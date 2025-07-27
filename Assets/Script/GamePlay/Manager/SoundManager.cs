@@ -61,6 +61,7 @@ public class SoundManager : Singleton<SoundManager>
     public void PlayInUpdate(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
+        Debug.Log("PlayInUpdate: " + name);
         if (s == null)
             return;
         if (!s.source.isPlaying)

@@ -10,6 +10,8 @@ public static class Constants
 
     public static string BoxClickSound = "BoxClick";
     public static string BoxCrashSound = "BoxCrash";
-    public static string LaunchSound = "Launch";
-    public static string BodyClickSound = "BodySound";
+    public static string LaunchSound = "LauchSound";
+    public static string BodySound = "BodySound";
+    public static string Moving = "Moving";
+    public static string Occupied = "Occupied"; 
 }

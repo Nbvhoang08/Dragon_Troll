@@ -37,6 +37,7 @@ public class Bullet : GenericPoolableObject, IPoolable
         Effect bodyEffect = Pool.Instance.bodyEffect(color);
         bodyEffect.transform.position = _target.position;
         bodyEffect.transform.localScale = Vector3.one * 2f;
+        SoundManager.Instance.Play(Constants.BodySound);
         ReturnToPool();
     }
 

@@ -94,6 +94,7 @@ public class Canon : MonoBehaviour
 
     IEnumerator FiringLoop()
     {
+        yield return new WaitForSeconds(0.6f);
         while (true)
         {
             if (_currAmmo <= 0)
@@ -114,6 +115,7 @@ public class Canon : MonoBehaviour
                 {
                     // CannonFire Process
                     PlayFlash(); 
+                    
                     Bullet bullet = Pool.Instance.bulletEffect;
                    
                     bullet.transform.position = firePoint.position;
@@ -123,7 +125,8 @@ public class Canon : MonoBehaviour
 
                     bullet.GetComponent<Bullet>().SetTarget(target.transform,_busColor);
                     bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
-                   
+
+                    SoundManager.Instance.Play(Constants.LaunchSound);
                     _currAmmo--;
                     _slot.bulletNumberText.text = _currAmmo.ToString();
                     isFiring = false;
@@ -141,16 +144,18 @@ public class Canon : MonoBehaviour
     public void PlayFlash()
     {
         muzzleRenderer.enabled = true;
-        muzzleRenderer.color = new Color(1, 1, 1, 1); // Reset alpha
+        muzzleRenderer.material.color = new Color(1, 1, 1, 1); // Reset alpha
 
-        // Scale to lớn hơn rồi thu nhỏ lại
+        // Scale to larger size and then shrink back
         muzzleRenderer.transform.localScale = Vector3.one * flashScale;
 
         Sequence muzzleSeq = DOTween.Sequence();
-        muzzleSeq.Append(muzzleRenderer.DOFade(0f, flashDuration).SetEase(Ease.OutQuad)); // Fade Out
-        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad)); // Scale về gốc
-        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Ẩn đi sau khi xong
+        Material muzzleMaterial = muzzleRenderer.material; // Access the material of the SpriteRenderer
+        muzzleSeq.Append(muzzleMaterial.DOFade(0f, flashDuration).SetEase(Ease.OutQuad)); // Fade Out
+        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad)); // Scale back to original
+        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Disable after completion
     }
+
     private Collider2D GetTargetInFront()
     {
         Vector3 screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));

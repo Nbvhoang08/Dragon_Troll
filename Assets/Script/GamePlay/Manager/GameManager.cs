@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,4 +24,15 @@ public class GameManager : Singleton<GameManager>
         return bestSlot;
     }
 
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) // 0 = Left click
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0f; // Đảm bảo z = 0 nếu là game 2D
+
+            Effect clickEffect = Pool.Instance.clickedEffect;
+            clickEffect.transform.position = mousePos;
+        }
+    }
 }

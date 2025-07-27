@@ -11,3 +11,4 @@ ProjectSettings/ProjectVersion.txt
 *.csproj
 ProjectSettings
 Assembly-CSharp-Editor.csproj
+Build
