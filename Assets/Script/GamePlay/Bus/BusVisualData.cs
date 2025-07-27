@@ -16,11 +16,6 @@ public class BusVisualData : ScriptableObject
         }
 
         var dirSet = visualSet.directionSprites.Find(d => d.direction == direction);
-        //if (dirSet == null)
-        //{
-        //    Debug.LogWarning($"No sprite found for direction {direction} in type {type} and color {color}");
-        //}
-
         return dirSet;
     }
 }

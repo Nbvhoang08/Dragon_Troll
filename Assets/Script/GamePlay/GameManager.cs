@@ -6,7 +6,6 @@ public class GameManager : Singleton<GameManager>
 {
     public List<Transform> checkpoints;
     public Slot[] slots;
-
     public Slot ValidSlot()
     {
         Slot bestSlot = null;

@@ -1,4 +1,3 @@
-// Snake.cs (Đã cập nhật hoàn chỉnh)
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -93,7 +92,7 @@ public class Snake : MonoBehaviour
             enabled = false;
             return;
         }
-        
+
         GenerateSegmentSequence();
         CreateSnakeSegments();
     }
@@ -101,7 +100,7 @@ public class Snake : MonoBehaviour
     void GenerateSegmentSequence()
     {
         segmentSequence.Clear();
-        
+
         segmentSequence.Add(SegmentType.Head);
 
         if (spawner != null)
@@ -120,7 +119,7 @@ public class Snake : MonoBehaviour
                 segmentSequence.Add(SegmentType.Red);
             }
         }
-        
+
         segmentSequence.Add(SegmentType.Tail);
     }
 
@@ -129,7 +128,7 @@ public class Snake : MonoBehaviour
         for (int i = 0; i < segmentSequence.Count; i++)
         {
             SegmentType segmentType = segmentSequence[i];
-            
+
             GameObject prefabToUse = segmentPrefab;
             if (segmentType == SegmentType.Head && headPrefab != null)
             {
@@ -141,7 +140,7 @@ public class Snake : MonoBehaviour
             }
 
             GameObject segmentObj = Instantiate(prefabToUse, transform);
-            
+
             SnakeSegment segment = segmentObj.GetComponent<SnakeSegment>() ?? segmentObj.AddComponent<SnakeSegment>();
 
             segment.SetSegmentIndex(i);
@@ -151,7 +150,7 @@ public class Snake : MonoBehaviour
             float initialOffset = GetTotalDistanceUpToSegment(i);
             Vector3 startPos = GetPositionOnPath(-initialOffset / pathLength);
             segmentObj.transform.position = startPos;
-            
+
             segments.Add(segment);
             segmentObj.name = $"Segment_{i}_{segmentType}";
         }
@@ -285,7 +284,7 @@ public class Snake : MonoBehaviour
 
         return pathRotations[pathRotations.Length - 1];
     }
-    
+
     Vector3 SetZToZero(Vector3 pos)
     {
         pos.z = 0;

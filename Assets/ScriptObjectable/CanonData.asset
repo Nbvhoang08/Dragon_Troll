@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07b0b501c3e72034d92acae274b84001, type: 3}
+  m_Name: CanonData
+  m_EditorClassIdentifier: 
+  canonVisuals:
+  - canonColor: 0
+    AmmoImage: {fileID: 21300000, guid: a2a923696010ba644818cdb333ab2a26, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 1fc95c57544a6d0408623e0da451fb22, type: 2}
+    canonSprite: {fileID: 21300000, guid: 829ebda21e4320a4db61fb6ecfa6fda6, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 9d663bd8e55a9ec4ea3872c74245f044, type: 3}
+    Color: {r: 0.990566, g: 0.34109113, b: 0.34109113, a: 1}
+  - canonColor: 1
+    AmmoImage: {fileID: 21300000, guid: ab79acf08ef8bd941ae3e815a64711a0, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 46362e8463fabb840a79592cb89a1ebb, type: 2}
+    canonSprite: {fileID: 21300000, guid: 044cb1eb52e0e474c979455a07fcbca9, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 967c4537362d57048ac9f44504f3d263, type: 3}
+    Color: {r: 0.4575472, g: 0.5092869, b: 1, a: 1}
+  - canonColor: 2
+    AmmoImage: {fileID: 21300000, guid: ffaa27f1c32df47449934dcf34b415e2, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 55d7081fe405ccd48bab08889f403c3e, type: 2}
+    canonSprite: {fileID: 21300000, guid: cc8784315a4571a45bf99d5f0b38c872, type: 2}
+    bottomSprite: {fileID: 21300000, guid: ff355fec5f359994091f5248de357b87, type: 3}
+    Color: {r: 0.5351386, g: 0.9528302, b: 0.39101997, a: 1}
+  - canonColor: 3
+    AmmoImage: {fileID: 21300000, guid: ea0b7550a13b7654a948f028938635f7, type: 3}
+    bulletSprite: {fileID: 21300000, guid: ae69174d94608ee42b1aedeab24b46e1, type: 2}
+    canonSprite: {fileID: 21300000, guid: 5faaa28e8ce196944b99c74a812383b4, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 0fc3d8db694c6a342a0ffdb160eb343d, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - canonColor: 4
+    AmmoImage: {fileID: 21300000, guid: b3fcc64da59fc7446b86236083d60f83, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 3509fdce0dbce3f44b2d73822184c28b, type: 2}
+    canonSprite: {fileID: 21300000, guid: 59856405f2c7f2344a1a6eff65968303, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 15325352cf0f15044b21e2b71b0acfc1, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - canonColor: 5
+    AmmoImage: {fileID: 21300000, guid: 17c413ad6086d43438e6c2f2d285c828, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 35fc5d34db4e27f489c93ffdf6946ba6, type: 2}
+    canonSprite: {fileID: 21300000, guid: cf05540fd8b8e5947986424060222802, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 9ecd4fa3a6307c641959b980cc14e63d, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - canonColor: 6
+    AmmoImage: {fileID: 21300000, guid: ec80b34cea11e35498707ffe9773ec7a, type: 3}
+    bulletSprite: {fileID: 21300000, guid: 8598bd491a051d049945de3f7735b6a5, type: 2}
+    canonSprite: {fileID: 21300000, guid: d4c30927a42fc3d4db607b3e9753c841, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 08c27498a273bd44e85805860ba49180, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - canonColor: 7
+    AmmoImage: {fileID: 21300000, guid: 0d2ad386702bc3b4a87e322922516194, type: 3}
+    bulletSprite: {fileID: 21300000, guid: a232352a291229a4f8805246a4866f7c, type: 2}
+    canonSprite: {fileID: 21300000, guid: b8c1af346ae4ea2439856e50babd6c82, type: 2}
+    bottomSprite: {fileID: 21300000, guid: 2c586b920ea02d64292f388d1ee9cd1d, type: 3}
+    Color: {r: 1, g: 1, b: 1, a: 1}

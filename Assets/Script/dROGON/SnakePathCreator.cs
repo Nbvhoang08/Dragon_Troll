@@ -7,18 +7,30 @@ public class SnakePathCreator : MonoBehaviour
     [Header("Path Settings")]
     public Transform[] pathPoints;
 
-    [Tooltip("Rotation (Euler angles) for each corresponding path point.")]
-    public Vector3[] pathRotations;
+    [Header("DOTween Path Settings")]
+    [Tooltip("Loại đường cong được tạo bởi DOTween. CatmullRom cho đường cong mượt.")]
+    public PathType pathType = PathType.CatmullRom;
 
+    [Tooltip("Độ phân giải của đường đi. Số điểm được lấy mẫu càng cao, đường đi càng mượt.")]
+    [Range(10, 500)]
+    public int pathResolution = 150;
+
+    // --- BIẾN MỚI ---
+    [Header("Rotation Smoothing")]
+    [Tooltip("Làm mượt góc xoay của rắn. Giá trị cao hơn sẽ nhìn về phía trước xa hơn, làm cho các khúc cua mượt mà hơn nhưng ít phản ứng hơn. Đặt thành 1 để tắt tính năng làm mượt.")]
+    [Range(1, 25)]
+    public int rotationSmoothingFactor = 10;
+    // --- KẾT THÚC BIẾN MỚI ---
+
+    [Header("Path Visualization")]
     public LineRenderer pathLineRenderer;
     public Color pathColor = Color.white;
     public float pathWidth = 0.1f;
-
-    [Header("Path Visualization")]
     public GameObject pathPointPrefab;
     public bool showPathPoints = true;
 
     private Vector3[] pathPositions;
+    private Vector3[] pathRotations;
     private bool isInitialized = false;
 
     void Awake()
@@ -42,6 +54,7 @@ public class SnakePathCreator : MonoBehaviour
         isInitialized = true;
     }
 
+    // --- PHƯƠNG THỨC CreatePath ĐÃ ĐƯỢC CẬP NHẬT LOGIC XOAY ---
     void CreatePath()
     {
         if (pathPoints == null || pathPoints.Length < 2)
@@ -51,33 +64,78 @@ public class SnakePathCreator : MonoBehaviour
             return;
         }
 
-        if (pathRotations == null || pathRotations.Length != pathPoints.Length)
+        List<Vector3> waypointsList = new List<Vector3>();
+        foreach (var point in pathPoints)
         {
-            Debug.LogWarning($"pathRotations is not set up correctly. Resizing to match pathPoints. Please set the rotation values in the Inspector.");
-            System.Array.Resize(ref pathRotations, pathPoints.Length);
-        }
-
-        List<Vector3> validPositions = new List<Vector3>();
-        for (int i = 0; i < pathPoints.Length; i++)
-        {
-            if (pathPoints[i] != null)
+            if (point != null)
             {
-                validPositions.Add(pathPoints[i].position);
-            }
-            else
-            {
-                Debug.LogWarning($"PathPoint tại index {i} bị null! Bỏ qua điểm này.");
+                waypointsList.Add(point.position);
             }
         }
 
-        if (validPositions.Count < 2)
+        if (waypointsList.Count < 2)
         {
             Debug.LogError("Không đủ pathPoints hợp lệ! Tạo path mặc định.");
             CreateDefaultPath();
             return;
         }
 
-        pathPositions = validPositions.ToArray();
+        Vector3[] waypoints = waypointsList.ToArray();
+
+        GameObject dummy = new GameObject("DOTweenPathGenerator_Temp");
+        dummy.transform.position = waypoints[0];
+
+        Tweener pathTweener = dummy.transform.DOPath(waypoints, 1f, pathType, PathMode.TopDown2D)
+            .SetAutoKill(false)
+            .Pause();
+
+        pathTweener.ForceInit();
+
+        pathPositions = new Vector3[pathResolution + 1];
+        for (int i = 0; i <= pathResolution; i++)
+        {
+            float percentage = (float)i / pathResolution;
+            pathPositions[i] = pathTweener.PathGetPoint(percentage);
+        }
+
+        pathTweener.Kill();
+        if (Application.isPlaying) Destroy(dummy);
+        else DestroyImmediate(dummy);
+
+        // --- LOGIC TÍNH TOÁN XOAY ĐÃ ĐƯỢC CẬP NHẬT ---
+        // Đoạn code này thay thế hoàn toàn logic cũ để làm mượt góc xoay.
+        pathRotations = new Vector3[pathPositions.Length];
+        if (pathPositions.Length > 1)
+        {
+            int lookAhead = Mathf.Clamp(rotationSmoothingFactor, 1, pathPositions.Length - 1);
+
+            for (int i = 0; i < pathPositions.Length; i++)
+            {
+                // Xác định điểm để nhìn tới, đảm bảo không vượt quá giới hạn mảng.
+                int lookAheadIndex = Mathf.Min(i + lookAhead, pathPositions.Length - 1);
+
+                // Lấy hướng từ điểm hiện tại tới điểm ở phía trước.
+                Vector3 direction = pathPositions[lookAheadIndex] - pathPositions[i];
+
+                // Nếu rắn đang ở gần cuối đường đi, hướng sẽ luôn là hướng tới điểm cuối cùng để tránh bị giật.
+                if (i > pathPositions.Length - lookAhead)
+                {
+                    direction = pathPositions[pathPositions.Length - 1] - pathPositions[i];
+                }
+
+                if (direction.sqrMagnitude > 0.001f) // Chỉ tính toán nếu hướng đủ lớn
+                {
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                    pathRotations[i] = new Vector3(0, 0, angle);
+                }
+                else if (i > 0)
+                {
+                    // Nếu không có hướng (ví dụ: điểm trùng lặp), sử dụng rotation của điểm trước đó.
+                    pathRotations[i] = pathRotations[i - 1];
+                }
+            }
+        }
+        // --- KẾT THÚC PHẦN CẬP NHẬT ---
 
         if (pathLineRenderer != null)
         {
@@ -102,18 +160,20 @@ public class SnakePathCreator : MonoBehaviour
         };
 
         pathRotations = new Vector3[pathPositions.Length];
-
         Debug.Log("Đã tạo path mặc định. Hãy thiết lập pathPoints trong Inspector để tùy chỉnh đường đi.");
     }
 
     void VisualizePathPoints()
     {
-        if (!showPathPoints || pathPointPrefab == null || pathPositions == null) return;
-        for (int i = 0; i < pathPositions.Length; i++)
+        if (!showPathPoints || pathPointPrefab == null || pathPoints == null) return;
+        foreach (var pointTransform in pathPoints)
         {
-            GameObject point = Instantiate(pathPointPrefab, pathPositions[i], Quaternion.Euler(pathRotations[i]));
-            point.name = "PathPoint_" + i;
-            point.transform.SetParent(transform);
+            if (pointTransform != null)
+            {
+                GameObject point = Instantiate(pathPointPrefab, pointTransform.position, pointTransform.rotation);
+                point.name = "PathPoint_" + pointTransform.GetSiblingIndex();
+                point.transform.SetParent(transform);
+            }
         }
     }
 
