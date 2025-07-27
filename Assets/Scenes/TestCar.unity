@@ -257,6 +257,8 @@ MonoBehaviour:
   - {fileID: 188236029}
   - {fileID: 420550350}
   - {fileID: 1564632252}
+  MusicOn: 1
+  HapticOn: 1
   slots:
   - {fileID: 2063840950}
   - {fileID: 165929591}
@@ -708,6 +710,83 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &224453081
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2153919120982422340, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589414827960051817, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: sounds.Array.data[1].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589414827960051817, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: sounds.Array.data[2].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589414827960051817, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: sounds.Array.data[3].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589414827960051817, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: sounds.Array.data[4].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6589414827960051817, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: backgroundSounds.Array.data[0].volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7380713839214775805, guid: a00675de89258c947b44203d410b3da6, type: 3}
+      propertyPath: m_Name
+      value: SoundManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a00675de89258c947b44203d410b3da6, type: 3}
 --- !u!1 &255976437
 GameObject:
   m_ObjectHideFlags: 0
@@ -2500,7 +2579,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Size.y
-      value: 0.83215475
+      value: 0.9930858
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Enabled
@@ -2512,7 +2591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Offset.y
-      value: 0
+      value: 0.080465645
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_SpriteTilingProperty.newSize.x
@@ -2952,7 +3031,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Size.y
-      value: 0.83215475
+      value: 1.3290823
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Enabled
@@ -2964,7 +3043,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_Offset.y
-      value: 0
+      value: -0.014833599
       objectReference: {fileID: 0}
     - target: {fileID: 5051520131151778080, guid: 32f016ad65c5ada44ad898819219038c, type: 3}
       propertyPath: m_SpriteTilingProperty.newSize.x
@@ -3567,6 +3646,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 1246108328}
+  - {fileID: 224453081}
   - {fileID: 125402662}
   - {fileID: 263930678}
   - {fileID: 1160635343}

@@ -40,6 +40,7 @@ public class Bus : MonoBehaviour
             Debug.LogWarning("Không tìm thấy slot hợp lệ!");
             return;
         }
+        SoundManager.Instance.Play(Constants.BoxClickSound);
         targetSlot.SetOccupied(true);
         Vector2 origin = transform.position;
         Vector2 direction = transform.up.normalized;
@@ -51,7 +52,6 @@ public class Bus : MonoBehaviour
         {
             Bounds bounds = hit.collider.bounds;
             intersection = GetIntersectionWithCenterLine(origin, direction, bounds);
-
             MoveToPoint(intersection);
             Debug.DrawLine(origin, intersection, Color.green, 1f);
         }
@@ -263,7 +263,7 @@ public class Bus : MonoBehaviour
             if (isMoving)
             {
                 Vector2 contactPoint = collision.GetContact(0).point;
-
+                SoundManager.Instance.Play(Constants.BoxCrashSound);
                 Effect collisionEffect = Pool.Instance.collisionEffect;
                 collisionEffect.transform.position = contactPoint;
 

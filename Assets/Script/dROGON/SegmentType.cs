@@ -1,20 +1,4 @@
-// SegmentType.cs (Đã cập nhật)
 using UnityEngine;
-
-public enum SegmentType
-{
-    Head,
-    Red,
-    Blue,
-    Green,
-    Yellow,
-    Purple,
-    Pink,
-    Brown,
-    Cyan,
-    Tail // THÊM MỚI: Loại đốt đuôi
-}
-
 public static class SegmentTypeExtensions
 {
     // Chuyển đổi từ BusColor sang SegmentType

@@ -5,6 +5,8 @@ using UnityEngine;
 public class GameManager : Singleton<GameManager>
 {
     public List<Transform> checkpoints;
+    public bool MusicOn = true;
+    public bool HapticOn = true;
     public Slot[] slots;
     public Slot ValidSlot()
     {
@@ -19,7 +21,6 @@ public class GameManager : Singleton<GameManager>
                 bestSlot = slot;
             }
         }
-
         return bestSlot;
     }
 

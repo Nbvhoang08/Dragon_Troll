@@ -256,3 +256,408 @@ MonoBehaviour:
     - direction: 6
       topSprite: {fileID: 21300000, guid: 14eaf4fddafe28a489ff2015e330b74f, type: 2}
       bottomSprite: {fileID: 0}
+  - busType: 0
+    busColor: 3
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 9620feaa333206d489312df661725ee4, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 5b131e5d1bbe1a84eb85d9939dd9c752, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 1b25d4c95c921fa4c8d2e2f192f07443, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 5b131e5d1bbe1a84eb85d9939dd9c752, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 3fe99888fce03664ab8c7977e8c58a24, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 35b1063299232724f8ce03ac30e01504, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 3fe99888fce03664ab8c7977e8c58a24, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 35b1063299232724f8ce03ac30e01504, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 2f5561f16ba74084aa89b8a873d23fa1, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 2f5561f16ba74084aa89b8a873d23fa1, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 2d90fa600223b11499f2b4bb0a20984a, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 2d90fa600223b11499f2b4bb0a20984a, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 1
+    busColor: 3
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 53ccb7a96f30a6a40978defdc02917f0, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 263396c98bae74647a0552d8ecc30c6a, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 0d5aa46e3d8957246bbb184235152c4b, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 263396c98bae74647a0552d8ecc30c6a, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: a543160b88d4953418bd6a9d765bafde, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 35b1063299232724f8ce03ac30e01504, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: a543160b88d4953418bd6a9d765bafde, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 35b1063299232724f8ce03ac30e01504, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 488a2f7dfcb738845a4169b5d272796e, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 488a2f7dfcb738845a4169b5d272796e, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 795483252713a3145b9b887da284bfa5, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 795483252713a3145b9b887da284bfa5, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 2
+    busColor: 3
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: f75a055460623fe47b77e5f5422cefe4, type: 2}
+      bottomSprite: {fileID: 21300000, guid: b96b3e34937cf094f8d02b3dd443daa6, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 26e8103b3c621454ea64e2ef0ef6964e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: b96b3e34937cf094f8d02b3dd443daa6, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 138661d87e64ea94690e54a53f0ee2d8, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 09a5e66cc9621fe4aa177b1dcd4cf56f, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 138661d87e64ea94690e54a53f0ee2d8, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 09a5e66cc9621fe4aa177b1dcd4cf56f, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 3b39a839a1f7667498b35ff9e533d28a, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 3b39a839a1f7667498b35ff9e533d28a, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 96201966a63b78a418a4f65025697e45, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 96201966a63b78a418a4f65025697e45, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 0
+    busColor: 4
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: be8852d7d0fcadd4196929675f9ff6dc, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6391c699ab114a242964f38e3c168218, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 26e8103b3c621454ea64e2ef0ef6964e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6391c699ab114a242964f38e3c168218, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 6870ba45049d06843ae9403ffa14018b, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 2b7c970847d9ca645b18aa42982c09a3, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 4f5e04ad62d250c458f1085d0aedc180, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 2b7c970847d9ca645b18aa42982c09a3, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: fe52c765fba474e4c9a5e88e00077f01, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: fe52c765fba474e4c9a5e88e00077f01, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: d91bc44229a18a54fa321fd06f56bc50, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: d91bc44229a18a54fa321fd06f56bc50, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 1
+    busColor: 4
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 90ee33e9b467a214ea7071e2c2df79fa, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: db50e46a2b1fe3a4fa77d357928b370e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 9703546f73273c745b5d8891aa4906ae, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 9703546f73273c745b5d8891aa4906ae, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 8b99684e696de6844bff522047d92b20, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 8b99684e696de6844bff522047d92b20, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 2bb57c2e78a25f34b8eb85384c218727, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 2bb57c2e78a25f34b8eb85384c218727, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 2
+    busColor: 4
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 208cb42275af76241a69afa856b3c75a, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 8c650a18401e09b4198dfb866e3a4b8b, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: f267b47fbb9130f479f74976bcf5f0d3, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: f267b47fbb9130f479f74976bcf5f0d3, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 2cd9f74154881c642b9d3abdc144980f, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 2cd9f74154881c642b9d3abdc144980f, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 8aa2d4cb089cb5a4d82da4433528f674, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 8aa2d4cb089cb5a4d82da4433528f674, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 0
+    busColor: 5
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 1355498f3c9d5a84fa05b32b072a7aa1, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 85afbb719423e184e9fa28b423ddbb7f, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 171bb1eeab6ce0f4f9bac2edb797c213, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 85afbb719423e184e9fa28b423ddbb7f, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 1ad1cbf07f6e5084fb959d48f8b043c2, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 1fee66e52fe1752439d636872b664a7d, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 1ad1cbf07f6e5084fb959d48f8b043c2, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 1fee66e52fe1752439d636872b664a7d, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 89c262eb504a0574a8444a44eb558801, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 89c262eb504a0574a8444a44eb558801, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: cfa6ff2c5b8e14d428bea82c71c71ff2, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: cfa6ff2c5b8e14d428bea82c71c71ff2, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 1
+    busColor: 5
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: cb58e86683deaff429d1d45d887d5949, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 92bb0077fcaa82c448ec202629925d8f, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 171bb1eeab6ce0f4f9bac2edb797c213, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 92bb0077fcaa82c448ec202629925d8f, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 9d6bd840cb598c447bffe5143603901f, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 8b1e0a8bd2ad9ee478dae5319afb9fa6, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 9d6bd840cb598c447bffe5143603901f, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 8b1e0a8bd2ad9ee478dae5319afb9fa6, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 0c1f82b7944eb24449ce5ecbed618565, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 0c1f82b7944eb24449ce5ecbed618565, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 72621d60d7110c648b93ba5ead11bced, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 72621d60d7110c648b93ba5ead11bced, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 2
+    busColor: 5
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 304e68d398425644e840381b6aaf7d09, type: 2}
+      bottomSprite: {fileID: 21300000, guid: ce5f29c6a0cd66e408aa0b0b267520a5, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 171bb1eeab6ce0f4f9bac2edb797c213, type: 2}
+      bottomSprite: {fileID: 21300000, guid: ce5f29c6a0cd66e408aa0b0b267520a5, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 56154530909a6b94bb3076ea357dfa2e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6102a5b54b82c064aaf267ad06f75e93, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 56154530909a6b94bb3076ea357dfa2e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6102a5b54b82c064aaf267ad06f75e93, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 9b5df56bde537474d940dd4a114374ad, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 9b5df56bde537474d940dd4a114374ad, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 0e3462313e841674193600f063c7e0d3, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 72621d60d7110c648b93ba5ead11bced, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 0
+    busColor: 6
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: dc477849109da994bbbb35788ec16f7a, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 70e7f8ea4c8dd9a4983de44dd9b0541f, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: b44b43321baf1f44c84bab8ca280d895, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 70e7f8ea4c8dd9a4983de44dd9b0541f, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: a8c838caecfd2fa4a938b9b20e71da9e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: a25ce8a9295f99842ac25818e4ed7ddb, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: a8c838caecfd2fa4a938b9b20e71da9e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: a25ce8a9295f99842ac25818e4ed7ddb, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 914e16751d6d7a54a853b526376c01e4, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 914e16751d6d7a54a853b526376c01e4, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: c3cfcaa46d024ef4f904c304e1298ba4, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: c3cfcaa46d024ef4f904c304e1298ba4, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 1
+    busColor: 6
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: a3ebffa6495b024489b920339aa094af, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 4895fa04b9b6c984a90dad4226de1709, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 2c7579b477d6b504e9e937e29d5ed4aa, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 4895fa04b9b6c984a90dad4226de1709, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 5f1f6f8e97461ae449ba96062879fccc, type: 2}
+      bottomSprite: {fileID: 21300000, guid: b6095027f7b910646919d08d53941616, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 5f1f6f8e97461ae449ba96062879fccc, type: 2}
+      bottomSprite: {fileID: 21300000, guid: b6095027f7b910646919d08d53941616, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 09b0a5f4b451368468d3b95ba8b4fb9b, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 09b0a5f4b451368468d3b95ba8b4fb9b, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: cc44b1ebc74390b418717a0b33b86f3a, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: cc44b1ebc74390b418717a0b33b86f3a, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 2
+    busColor: 6
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: f8bfba5075d1dab48887b19eef99ef03, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 22a6a4eac1c26874dab9469a4389ddd2, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 85e5a3a559357dd4ca69b153de7a984b, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 22a6a4eac1c26874dab9469a4389ddd2, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: f1f16fd786dac38409289212a4eb980e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: dde2245042f2b8e4db7e361014544866, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: f1f16fd786dac38409289212a4eb980e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: dde2245042f2b8e4db7e361014544866, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 6a7488a8bc99d5f4687119fcb7b82a4f, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 6a7488a8bc99d5f4687119fcb7b82a4f, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: f4b56ee06e070d94ebfe3c45336be06f, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: f4b56ee06e070d94ebfe3c45336be06f, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 0
+    busColor: 7
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: 034ed1746063a8745bf7e23ed4ef67aa, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 894a8affc073e8e4ea1bc9607ea3caf7, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: 8b21fd008426e334c82568f893197315, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 894a8affc073e8e4ea1bc9607ea3caf7, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: e01414b54532d2b4eb58660c0c10f91f, type: 2}
+      bottomSprite: {fileID: 21300000, guid: c1c2f033be4669842ae36d0f56d556f9, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: e01414b54532d2b4eb58660c0c10f91f, type: 2}
+      bottomSprite: {fileID: 21300000, guid: c1c2f033be4669842ae36d0f56d556f9, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 392dcb9e6b5c80545bf3c0eabe464395, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 392dcb9e6b5c80545bf3c0eabe464395, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 15ba94f5c1507324c8a1d5d9a8ca4f02, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 15ba94f5c1507324c8a1d5d9a8ca4f02, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 1
+    busColor: 7
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: fe1867f568930254694ee590fb953772, type: 2}
+      bottomSprite: {fileID: 21300000, guid: c71cf21194d02944ab985821d01a694a, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: fe1867f568930254694ee590fb953772, type: 2}
+      bottomSprite: {fileID: 21300000, guid: c71cf21194d02944ab985821d01a694a, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 699125d7a933eb748b8504672fbf83cc, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 013fd68a278795a4faa06337bcc8e587, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 699125d7a933eb748b8504672fbf83cc, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 013fd68a278795a4faa06337bcc8e587, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 594ef0212bd47a8428a612848d825998, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 594ef0212bd47a8428a612848d825998, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: 2e2caff4fb2d36348a1aabe2ded5a0e8, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: 2e2caff4fb2d36348a1aabe2ded5a0e8, type: 2}
+      bottomSprite: {fileID: 0}
+  - busType: 2
+    busColor: 7
+    directionSprites:
+    - direction: 0
+      topSprite: {fileID: 21300000, guid: b031b475eb36cc24baded54cbb5ff186, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 65346c6dd64b9914ba52abfe4b35b9c5, type: 2}
+    - direction: 1
+      topSprite: {fileID: 21300000, guid: b031b475eb36cc24baded54cbb5ff186, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 65346c6dd64b9914ba52abfe4b35b9c5, type: 2}
+    - direction: 2
+      topSprite: {fileID: 21300000, guid: 4bf8fa0da57f3684990709cfb5a226cf, type: 3}
+      bottomSprite: {fileID: 21300000, guid: a9d683e982f841a48a09dce651616ac2, type: 2}
+    - direction: 3
+      topSprite: {fileID: 21300000, guid: 4bf8fa0da57f3684990709cfb5a226cf, type: 3}
+      bottomSprite: {fileID: 21300000, guid: a9d683e982f841a48a09dce651616ac2, type: 2}
+    - direction: 4
+      topSprite: {fileID: 21300000, guid: 598aa7822033da94b8f268bf9cddf8c2, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 5
+      topSprite: {fileID: 21300000, guid: 598aa7822033da94b8f268bf9cddf8c2, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 6
+      topSprite: {fileID: 21300000, guid: d3527324b4d699c4e933b42f08b4a96d, type: 2}
+      bottomSprite: {fileID: 0}
+    - direction: 7
+      topSprite: {fileID: 21300000, guid: d3527324b4d699c4e933b42f08b4a96d, type: 2}
+      bottomSprite: {fileID: 0}

@@ -81,7 +81,7 @@ public class SnakeSegment : MonoBehaviour
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.DOColor(Color.red, destroyAnimationDuration * 0.5f);
+    // spriteRenderer.DOColor(Color.red, destroyAnimationDuration * 0.5f);
         }
     }
 
