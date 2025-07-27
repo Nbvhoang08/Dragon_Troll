@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : GenericPoolableObject, IPoolable
 {
     [Header("Settings")]
     public float speed =1f;
     private Transform _target;
-
-    public void SetTarget(Transform target)
+    public BusColor color;
+    public void SetTarget(Transform target,BusColor canonColor)
     {
         _target = target;
+        color = canonColor;
     }
 
 
@@ -18,7 +19,7 @@ public class Bullet : MonoBehaviour
     {
         if (_target == null)
         {
-            Destroy(gameObject);
+            ReturnToPool();
             return;
         }
         transform.position = Vector3.MoveTowards(transform.position, _target.position, speed * Time.deltaTime);
@@ -33,8 +34,10 @@ public class Bullet : MonoBehaviour
 
     void OnHitTarget()
     {
-        // TODO: hiệu ứng nổ, trừ máu, pool lại, ...
-        Destroy(gameObject);
+        Effect bodyEffect = Pool.Instance.bodyEffect(color);
+        bodyEffect.transform.position = _target.position;
+        bodyEffect.transform.localScale = Vector3.one * 2f;
+        ReturnToPool();
     }
 
 }

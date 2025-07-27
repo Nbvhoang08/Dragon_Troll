@@ -23,10 +23,13 @@ public class Canon : MonoBehaviour
     private Coroutine firingRoutine;
     public Sprite bulletSprite;
     public float fireCooldown = 0.25f;
+
     [Header("Muzzle Settings")]
     public SpriteRenderer muzzleRenderer; // Hoặc bạn có thể dùng GameObject nếu dùng Particle/VFX
     public float flashScale = 1.5f;
     public float flashDuration = 0.15f;
+
+    private BusColor _busColor;
     private void Awake()
     {
         _slot = GetComponentInParent<Slot>();
@@ -37,6 +40,7 @@ public class Canon : MonoBehaviour
         bottom.sprite = data.bottomSprite;
         bottom.color = data.Color;
         canonSprite.sprite = data.canonSprite;
+        _busColor = data.canonColor;
         SetUpAnimation();
     }
 
@@ -110,14 +114,16 @@ public class Canon : MonoBehaviour
                 canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, targetAngle - 90f);
                 CanonFireAnimation(() =>
                 {
-                    PlayFlash(); // Hiệu ứng flash khi bắn
-                    GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-
+                    // CannonFire Process
+                    PlayFlash(); 
+                    Bullet bullet = Pool.Instance.bulletEffect;
+                   
+                    bullet.transform.position = firePoint.position;
                     Vector2 dirToTarget = (target.transform.position - bullet.transform.position).normalized;
                     float angle = Mathf.Atan2(dirToTarget.y, dirToTarget.x) * Mathf.Rad2Deg;
                     bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90);
 
-                    bullet.GetComponent<Bullet>().SetTarget(target.transform);
+                    bullet.GetComponent<Bullet>().SetTarget(target.transform,_busColor);
                     bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
                    
                     _currAmmo--;

@@ -258,10 +258,15 @@ public class Bus : MonoBehaviour
         }
         else 
         {
-            targetSlot?.SetOccupied(false); // Giải phóng slot nếu đang di chuyển
+            targetSlot?.SetOccupied(false); 
             targetSlot = null;
             if (isMoving)
             {
+                Vector2 contactPoint = collision.GetContact(0).point;
+
+                Effect collisionEffect = Pool.Instance.collisionEffect;
+                collisionEffect.transform.position = contactPoint;
+
                 transform.DOMove(startPosition, 0.3f)
                     .SetEase(Ease.InOutQuad)
                     .OnComplete(() => isMoving = false);

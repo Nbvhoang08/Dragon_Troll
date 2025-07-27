@@ -1,3 +1,4 @@
+// GameManager1.cs (Đã cập nhật)
 using UnityEngine;
 
 public class GameManager1 : MonoBehaviour
@@ -43,8 +44,8 @@ public class GameManager1 : MonoBehaviour
     {
         Debug.Log("=== HƯỚNG DẪN CHƠI ===");
         Debug.Log("- Ấn E để đổi hướng di chuyển (tiến/lùi)");
-        Debug.Log("- Click vào các đốt rắn (không phải đầu) để phá hủy");
-        Debug.Log("- Mục tiêu: Phá hủy hết rắn trước khi nó đến thành");
+        Debug.Log("- Click vào các đốt rắn (không phải đầu/đuôi) để phá hủy");
+        Debug.Log("- Mục tiêu: Phá hủy hết các đốt màu trước khi rắn đến thành");
         Debug.Log("- Ấn R để restart game");
         Debug.Log("- Ấn P để tạm dừng/tiếp tục");
         Debug.Log("====================");
@@ -54,7 +55,8 @@ public class GameManager1 : MonoBehaviour
     {
         if (gameEnded) return;
 
-        if (snakeController != null && snakeController.GetSegmentCount() <= 1)
+        // Kiểm tra chiến thắng bằng cách đếm số đốt có thể phá hủy
+        if (snakeController != null && snakeController.GetDestructibleSegmentCount() == 0)
         {
             OnVictory();
         }
@@ -77,7 +79,7 @@ public class GameManager1 : MonoBehaviour
     {
         if (gameEnded) return;
         gameEnded = true;
-        Debug.Log("THẮNG! Đã phá hủy hoàn toàn con rắn!");
+        Debug.Log("THẮNG! Đã phá hủy hoàn toàn các đốt của rắn!");
 
         if (snakeController != null)
         {
