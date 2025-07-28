@@ -103,12 +103,14 @@ public class Canon : MonoBehaviour
                 yield break;
             }
 
-            Collider2D target = GetTargetInFront();
+            BodyTest target = GetTargetInFront();
 
             if (target != null && !isFiring)
             {
+                
                 isFiring = true;
-                Vector2 dir = (target.transform.position - firePoint.position).normalized;
+                target.targetLocked = true;
+                Vector2 dir = (target.gameObject.transform.position - firePoint.position).normalized;
                 float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, targetAngle - 90f);
                 CanonFireAnimation(() =>
@@ -123,7 +125,7 @@ public class Canon : MonoBehaviour
                     float angle = Mathf.Atan2(dirToTarget.y, dirToTarget.x) * Mathf.Rad2Deg;
                     bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90);
 
-                    bullet.GetComponent<Bullet>().SetTarget(target.transform,_busColor);
+                    bullet.GetComponent<Bullet>().SetTarget(target,_busColor);
                     bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
 
                     SoundManager.Instance.Play(Constants.LaunchSound);
@@ -156,19 +158,43 @@ public class Canon : MonoBehaviour
         muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Disable after completion
     }
 
-    private Collider2D GetTargetInFront()
+    private BodyTest GetTargetInFront()
     {
         Vector3 screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
         Vector3 screenRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0));
         float fireWidth = Mathf.Abs(screenRight.x - screenLeft.x);
 
         float centerX = (screenLeft.x + screenRight.x) / 2f;
-        float centerY = transform.position.y + fireHeight / 2f; // ← dùng transform thay vì firePoint
+        float centerY = transform.position.y + fireHeight / 2f;
 
         Vector2 boxCenterWorld = new Vector2(centerX, centerY);
         Vector2 boxSize = new Vector2(fireWidth, fireHeight);
 
-        return Physics2D.OverlapBox(boxCenterWorld, boxSize, 0f, targetMask);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenterWorld, boxSize, 0f, targetMask);
+
+        BodyTest bestTarget = null;
+        int lowestIndex = int.MaxValue;
+
+        foreach (var hit in hits)
+        {
+            BodyTest body = hit.GetComponent<BodyTest>();
+            if (body == null) continue;
+
+            // So màu
+            if (body.busColor != _busColor) continue;
+
+            // Nếu đã bị khóa bởi súng khác
+            if (body.targetLocked) continue;
+
+            // Lấy target có index nhỏ nhất
+            if (body.index < lowestIndex)
+            {
+                bestTarget = body;
+                lowestIndex = body.index;
+            }
+        }
+
+        return bestTarget;
     }
 
     private void OnDrawGizmosSelected()
