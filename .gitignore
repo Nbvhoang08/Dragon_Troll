@@ -3,12 +3,12 @@ obj
 Logs
 Temp
 UserSettings
-UserSettings
+
 .vs
 *.csproj
 Assembly-CSharp.csproj
 ProjectSettings/ProjectVersion.txt
 *.csproj
-ProjectSettings
+
 Assembly-CSharp-Editor.csproj
 Build
