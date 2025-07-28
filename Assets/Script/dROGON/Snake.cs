@@ -13,7 +13,15 @@ public class Snake : MonoBehaviour
     [Tooltip("Khoảng cách riêng giữa đầu rắn và đốt thân đầu tiên.")]
     public float headToFirstSegmentSpacing = 1.5f;
     [Tooltip("Khoảng cách riêng giữa đốt thân cuối cùng và đuôi rắn.")]
-    public float lastSegmentToTailSpacing = 1.5f; // THÊM MỚI
+    public float lastSegmentToTailSpacing = 1.5f;
+
+    [Header("Smooth Movement Settings")]
+    [Tooltip("Tốc độ làm mượt rotation (càng cao càng mượt)")]
+    [Range(1f, 20f)]
+    public float rotationSmoothSpeed = 8f;
+    [Tooltip("Tốc độ làm mượt position")]
+    [Range(0.05f, 0.5f)]
+    public float positionSmoothSpeed = 0.1f;
 
     [Header("Prefabs")]
     public GameObject segmentPrefab;
@@ -34,6 +42,10 @@ public class Snake : MonoBehaviour
     private bool isMoving = true;
     private bool isReversing = false;
     private List<SegmentType> segmentSequence = new List<SegmentType>();
+
+    // Thêm cache cho smooth rotation
+    private Dictionary<int, float> segmentCurrentRotations = new Dictionary<int, float>();
+    private Dictionary<int, bool> segmentFlipStates = new Dictionary<int, bool>();
 
     [Header("Game Events")]
     public UnityEngine.Events.UnityEvent OnReachEnd;
@@ -95,6 +107,19 @@ public class Snake : MonoBehaviour
 
         GenerateSegmentSequence();
         CreateSnakeSegments();
+        InitializeRotationCache();
+    }
+
+    void InitializeRotationCache()
+    {
+        segmentCurrentRotations.Clear();
+        segmentFlipStates.Clear();
+
+        for (int i = 0; i < segments.Count; i++)
+        {
+            segmentCurrentRotations[i] = 0f;
+            segmentFlipStates[i] = false;
+        }
     }
 
     void GenerateSegmentSequence()
@@ -159,42 +184,30 @@ public class Snake : MonoBehaviour
         Debug.Log($"Đã tạo rắn với {segments.Count} đốt: {string.Join(", ", segmentSequence)}");
     }
 
-    // CẬP NHẬT: Hàm tính toán khoảng cách được viết lại cho rõ ràng và chính xác
     private float GetTotalDistanceUpToSegment(int index)
     {
-        // Đốt đầu (index 0) luôn ở gốc
         if (index <= 0) return 0f;
 
-        // Nếu chỉ có 2 đốt (đầu và đuôi), chỉ dùng khoảng cách đầu
         if (segmentSequence.Count == 2 && index == 1)
         {
             return headToFirstSegmentSpacing;
         }
 
-        // Tính khoảng cách tới đốt ngay phía trước nó
         float distanceToPrevious = GetTotalDistanceUpToSegment(index - 1);
 
-        // Xác định khoảng cách cần thêm vào dựa trên vị trí của đốt *phía trước*
-        // Nếu đốt hiện tại là đuôi (index cuối cùng)
         if (index == segmentSequence.Count - 1)
         {
-            // Khoảng cách là giữa đốt thân cuối và đuôi
             return distanceToPrevious + lastSegmentToTailSpacing;
         }
-        // Nếu đốt hiện tại là đốt thân đầu tiên (index = 1)
         else if (index == 1)
         {
-            // Khoảng cách là giữa đầu và đốt thân đầu tiên
             return distanceToPrevious + headToFirstSegmentSpacing;
         }
-        // Các trường hợp còn lại là các đốt thân
         else
         {
-            // Khoảng cách là khoảng cách tiêu chuẩn
             return distanceToPrevious + segmentSpacing;
         }
     }
-
 
     void MoveSnake()
     {
@@ -229,9 +242,79 @@ public class Snake : MonoBehaviour
             Vector3 targetPosition = GetPositionOnPath(segmentProgress);
             Vector3 targetRotation = GetRotationOnPath(segmentProgress);
 
-            segments[i].UpdatePosition(targetPosition, 0.1f);
-            segments[i].UpdateRotation(targetRotation);
+            // Smooth position update
+            segments[i].UpdatePosition(targetPosition, positionSmoothSpeed);
+
+            // Smooth rotation update - ĐÂY LÀ PHẦN QUAN TRỌNG
+            UpdateSegmentRotationSmooth(segments[i], targetRotation, i);
         }
+    }
+
+    // PHƯƠNG THỨC MỚI: Cập nhật rotation mượt mà
+    void UpdateSegmentRotationSmooth(SnakeSegment segment, Vector3 targetRotation, int segmentIndex)
+    {
+        float targetRotationZ = targetRotation.z;
+
+        // Lấy rotation hiện tại từ cache
+        if (!segmentCurrentRotations.ContainsKey(segmentIndex))
+        {
+            segmentCurrentRotations[segmentIndex] = targetRotationZ;
+        }
+
+        float currentRotationZ = segmentCurrentRotations[segmentIndex];
+
+        // Tính toán shortest angle để tránh quay vòng 360 độ
+        float deltaRotation = Mathf.DeltaAngle(currentRotationZ, targetRotationZ);
+
+        // Smooth lerp rotation
+        float smoothedRotation = currentRotationZ + deltaRotation * rotationSmoothSpeed * Time.deltaTime;
+
+        // Update cache
+        segmentCurrentRotations[segmentIndex] = smoothedRotation;
+
+        // Normalize rotation để tính flip
+        float normalizedRotation = NormalizeAngle(smoothedRotation);
+
+        // Kiểm tra flip state với hysteresis để tránh flickering
+        bool currentFlipState = segmentFlipStates.ContainsKey(segmentIndex) ? segmentFlipStates[segmentIndex] : false;
+        bool shouldFlipY = ShouldFlipWithHysteresis(normalizedRotation, currentFlipState);
+
+        // Chỉ update flip nếu có thay đổi
+        if (shouldFlipY != currentFlipState)
+        {
+            segmentFlipStates[segmentIndex] = shouldFlipY;
+            segment.SetFlipY(shouldFlipY);
+        }
+
+        // Apply smooth rotation
+        Vector3 smoothRotationVector = new Vector3(0, 0, smoothedRotation);
+        segment.UpdateRotation(smoothRotationVector);
+    }
+
+    // PHƯƠNG THỨC MỚI: Flip với hysteresis để tránh flickering
+    bool ShouldFlipWithHysteresis(float rotationZ, bool currentFlipState)
+    {
+        const float hysteresisMargin = 5f; // 5 độ margin để tránh flickering
+
+        if (currentFlipState)
+        {
+            // Nếu đang flip, chỉ unflip khi rotation về khoảng an toàn
+            return !(rotationZ <= (90f - hysteresisMargin) && rotationZ >= (-90f + hysteresisMargin));
+        }
+        else
+        {
+            // Nếu không flip, chỉ flip khi rotation ra khỏi khoảng an toàn
+            return rotationZ > (90f + hysteresisMargin) || rotationZ < (-90f - hysteresisMargin);
+        }
+    }
+
+    float NormalizeAngle(float angle)
+    {
+        while (angle > 180f)
+            angle -= 360f;
+        while (angle < -180f)
+            angle += 360f;
+        return angle;
     }
 
     Vector3 GetPositionOnPath(float progress)
@@ -272,11 +355,23 @@ public class Snake : MonoBehaviour
         float totalLength = 0f;
         float targetLength = progress * pathLength;
 
+        // IMPROVED: Interpolate rotation giữa các điểm để mượt hơn
         for (int i = 1; i < pathPositions.Length; i++)
         {
             float segmentLength = Vector3.Distance(pathPositions[i - 1], pathPositions[i]);
             if (totalLength + segmentLength >= targetLength)
             {
+                // Interpolate rotation giữa 2 điểm
+                if (segmentLength > 0)
+                {
+                    float t = (targetLength - totalLength) / segmentLength;
+                    Vector3 rot1 = pathRotations[i - 1];
+                    Vector3 rot2 = pathRotations[i];
+
+                    // Sử dụng Mathf.LerpAngle cho Z rotation để tránh jump 360 độ
+                    float lerpedZ = Mathf.LerpAngle(rot1.z, rot2.z, t);
+                    return new Vector3(rot1.x, rot1.y, lerpedZ);
+                }
                 return pathRotations[i - 1];
             }
             totalLength += segmentLength;
@@ -293,6 +388,12 @@ public class Snake : MonoBehaviour
 
     public void OnSegmentDestroyed(int segmentIndex)
     {
+        // Clean up rotation cache for destroyed segment
+        if (segmentCurrentRotations.ContainsKey(segmentIndex))
+            segmentCurrentRotations.Remove(segmentIndex);
+        if (segmentFlipStates.ContainsKey(segmentIndex))
+            segmentFlipStates.Remove(segmentIndex);
+
         ReconnectSegments(segmentIndex);
 
         if (GameManagerExtension.Instance != null)
@@ -319,10 +420,28 @@ public class Snake : MonoBehaviour
             return;
         }
 
+        // Rebuild rotation cache với index mới
+        Dictionary<int, float> newRotationCache = new Dictionary<int, float>();
+        Dictionary<int, bool> newFlipCache = new Dictionary<int, bool>();
+
         for (int i = 0; i < segments.Count; i++)
         {
             segments[i].SetSegmentIndex(i);
+
+            // Preserve rotation state nếu có thể
+            int oldIndex = segments[i].segmentIndex;
+            if (segmentCurrentRotations.ContainsKey(oldIndex))
+            {
+                newRotationCache[i] = segmentCurrentRotations[oldIndex];
+            }
+            if (segmentFlipStates.ContainsKey(oldIndex))
+            {
+                newFlipCache[i] = segmentFlipStates[oldIndex];
+            }
         }
+
+        segmentCurrentRotations = newRotationCache;
+        segmentFlipStates = newFlipCache;
 
         UpdateSegmentSortingOrders();
 

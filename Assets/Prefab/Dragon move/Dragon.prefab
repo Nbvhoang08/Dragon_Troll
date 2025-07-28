@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3650479442523689491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5153528724255337369}
+  - component: {fileID: 1120316745118305484}
+  m_Layer: 0
+  m_Name: Dragon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5153528724255337369
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3650479442523689491}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1120316745118305484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3650479442523689491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438eb57b778ccbb47a096388e7eb691d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 1
+  reverseSpeed: 1
+  segmentSpacing: 0.5
+  headToFirstSegmentSpacing: 0.8
+  lastSegmentToTailSpacing: 1
+  rotationSmoothSpeed: 8
+  positionSmoothSpeed: 0.5
+  segmentPrefab: {fileID: 8772537537874336679, guid: d27062554e05f2546aa3a31f346f906b, type: 3}
+  headPrefab: {fileID: 5378398037795478911, guid: 352a328896d68d2499fc3e05acf6689f, type: 3}
+  tailPrefab: {fileID: 8772537537874336679, guid: 42eb18f977cac884dbcc8b5992c38960, type: 3}
+  pathCreator: {fileID: 0}
+  spawner: {fileID: 0}
+  OnReachEnd:
+    m_PersistentCalls:
+      m_Calls: []

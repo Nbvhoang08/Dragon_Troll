@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &126944149453483518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3370618185248589335}
+  - component: {fileID: 259609018705092182}
+  - component: {fileID: 8395309370223056797}
+  m_Layer: 0
+  m_Name: spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3370618185248589335
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126944149453483518}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.48024708, y: -0.76656353, z: -10.02775}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &259609018705092182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126944149453483518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bad151f42f49a74b9d3f9d0e6a10f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ammoList:
+  - color: 1
+    count: 9
+  - color: 0
+    count: 0
+  - color: 0
+    count: 7
+  - color: 0
+    count: 9
+  maxChunkSize: 4
+  squarePrefab: {fileID: 0}
+  spawnParent: {fileID: 0}
+--- !u!114 &8395309370223056797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126944149453483518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f4745c22b6b51a40bff0b6eaa4d2d8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteMappings:
+  - segmentType: 0
+    sprite: {fileID: 21300000, guid: d9d0113f9d26ed741a11612c70cdf3d0, type: 3}
+  - segmentType: 1
+    sprite: {fileID: 21300000, guid: 9ffeea9f3adc2b8488cd4fe11bccf9c7, type: 2}
+  - segmentType: 4
+    sprite: {fileID: 21300000, guid: 9412b8ab68385a047a87857670f72e45, type: 2}
+  - segmentType: 3
+    sprite: {fileID: 21300000, guid: 05c9cd63ef6141d4fbaebae640f59ef3, type: 2}
+  - segmentType: 2
+    sprite: {fileID: 21300000, guid: 11458547c3eb5204cb3e91d4b225fafc, type: 2}
+  - segmentType: 8
+    sprite: {fileID: 21300000, guid: 6a1d9af5afafdc14a87f64f5c1ee3521, type: 2}
+  - segmentType: 6
+    sprite: {fileID: 21300000, guid: def99f08d98c8414281c859bb3343fa4, type: 2}
+  - segmentType: 5
+    sprite: {fileID: 21300000, guid: 41cea29ab1d0fc843a21954fd700d6c5, type: 2}
+  - segmentType: 8
+    sprite: {fileID: 21300000, guid: 90d67e06a3ee28a41ba190477b1d4efc, type: 2}
+  - segmentType: 9
+    sprite: {fileID: 21300000, guid: 2caf850189cae71428b899a6fce3e852, type: 3}
