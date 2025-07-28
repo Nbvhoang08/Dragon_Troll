@@ -7,10 +7,11 @@ public class Bus : MonoBehaviour
 {
     [Header("State Setting")]
 
-    private bool isMoving = false;
+    public bool isMoving = false;
     public float shakeDuration = 0.2f;
     public float shakeStrength = 0.2f;
     private bool isShaking = false;
+
     [Header("Path Points")]
     public Vector2 intersection; 
     public Slot targetSlot;
@@ -19,14 +20,17 @@ public class Bus : MonoBehaviour
     public float raycastDistance = 20f;
     public float moveSpeed = 5f;
     [SerializeField]private List<Vector3> _finalPath;
+
     private int _currentIndex = 0;
     private Vector3 startPosition;
     private Collider2D _collider;
-    private BusVisual _busVisual;   
-
+    private BusVisual _busVisual;
+    private bool Clocked;
+    public bool IsOnConveyor { get; set; } = false; // Biến để xác định xem bus có đang trên băng chuyền 
     void Start()
     {
         _collider = GetComponent<Collider2D>();
+        
         startPosition = transform.position;
         _busVisual = GetComponent<BusVisual>();
     }
@@ -34,6 +38,7 @@ public class Bus : MonoBehaviour
     private void OnMouseDown()
     {
         if (isMoving) return;
+        if (Clocked) return;
         targetSlot = GameManager.Instance.ValidSlot();
         if (targetSlot == null)
         {
@@ -45,6 +50,10 @@ public class Bus : MonoBehaviour
         Vector2 origin = transform.position;
         Vector2 direction = transform.up.normalized;
         Vector2 end = origin + direction * raycastDistance;
+        if (IsOnConveyor)
+        {
+            startPosition = transform.position; 
+        }
 
         RaycastHit2D hit = Physics2D.Linecast(origin, end, LayerMask.GetMask("Road"));
 
@@ -53,6 +62,7 @@ public class Bus : MonoBehaviour
             Bounds bounds = hit.collider.bounds;
             intersection = GetIntersectionWithCenterLine(origin, direction, bounds);
             MoveToPoint(intersection);
+
             Debug.DrawLine(origin, intersection, Color.green, 1f);
         }
         else
@@ -68,6 +78,7 @@ public class Bus : MonoBehaviour
         Vector3 target3D = new Vector3(target.x, target.y, transform.position.z);
         float distance = Vector3.Distance(transform.position, target3D);
         float duration = distance / moveSpeed;
+        GameEvents.ConveyorRun?.Invoke(true); // Thông báo bắt đầu di chuyển
         transform.DOMove(target3D, duration)
             .SetEase(Ease.Linear)
             .OnComplete(
@@ -221,10 +232,10 @@ public class Bus : MonoBehaviour
                 targetSlot.OnOccupied(_busVisual.busColor, _busVisual.busType);
                 transform.position = startPosition; // Trả về vị trí ban đầu
             });
-            
+            GameEvents.ConveyorRun?.Invoke(false);
+            if(IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this); // Cập nhật danh sách bus trên băng chuyền
             return;
         }
-
         Vector3 from = _finalPath[_currentIndex];
         Vector3 to = _finalPath[_currentIndex + 1];
         float distance = Vector3.Distance(from, to);
@@ -272,8 +283,26 @@ public class Bus : MonoBehaviour
 
                 transform.DOMove(startPosition, 0.3f)
                     .SetEase(Ease.InOutQuad)
-                    .OnComplete(() => isMoving = false);
+                    .OnComplete(() =>
+                    {
+                        isMoving = false;
+                        GameEvents.ConveyorRun?.Invoke(false); // Thông báo bắt đầu di chuyển
+                    });
             }
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Clocker"))
+        {
+            Clocked = true;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Clocker"))
+        {
+            Clocked = false;
         }
     }
 }

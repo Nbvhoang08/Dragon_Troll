@@ -8,7 +8,7 @@
     Pink,
     Brown,
     Cyan,
-    None,
+    None
 }
 public enum BusType
 {
@@ -34,4 +34,11 @@ public enum SegmentType
     Brown,
     Cyan,
     Tail // THÊM MỚI: Loại đốt đuôi
+}
+public enum GameState
+{
+    Starting,
+    Playing,
+    Paused,
+    GameOver
 }

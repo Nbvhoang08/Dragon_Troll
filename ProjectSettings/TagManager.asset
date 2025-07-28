@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Road
+  - DownBorder
+  - Clocker
   layers:
   - Default
   - TransparentFX
@@ -14,7 +16,7 @@ TagManager:
   - UI
   - Road
   - DragonBody
-  - 
+  - Bus
   - 
   - 
   - 
