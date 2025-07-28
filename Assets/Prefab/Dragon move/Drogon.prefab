@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7999339688608745458
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6215511143039656837}
+  - component: {fileID: 7440605208195077838}
+  m_Layer: 0
+  m_Name: Drogon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6215511143039656837
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7999339688608745458}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.2276144, y: -3.2595348, z: -10.090036}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7440605208195077838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7999339688608745458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 438eb57b778ccbb47a096388e7eb691d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 1
+  reverseSpeed: 1
+  segmentSpacing: 0.4
+  headToFirstSegmentSpacing: 0.6
+  lastSegmentToTailSpacing: 1
+  rotationSmoothSpeed: 8
+  positionSmoothSpeed: 0.1
+  segmentPrefab: {fileID: 8772537537874336679, guid: d27062554e05f2546aa3a31f346f906b, type: 3}
+  headPrefab: {fileID: 8772537537874336679, guid: e69694b77048fab458b67d46d365b884, type: 3}
+  tailPrefab: {fileID: 8772537537874336679, guid: 42eb18f977cac884dbcc8b5992c38960, type: 3}
+  pathCreator: {fileID: 0}
+  spawner: {fileID: 0}
+  OnReachEnd:
+    m_PersistentCalls:
+      m_Calls: []

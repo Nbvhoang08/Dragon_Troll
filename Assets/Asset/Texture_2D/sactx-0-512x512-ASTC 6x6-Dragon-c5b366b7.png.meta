@@ -1,11 +1,9 @@
 fileFormatVersion: 2
 guid: 5822108780902d04fbe6b5b93b0350e6
-timeCreated: 1753290956
-licenseType: Free
 TextureImporter:
-  serializedVersion: 13
   internalIDToNameTable: []
   externalObjects: {}
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -82,45 +80,211 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_0
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 308
+        width: 139
+        height: 169
+      alignment: 9
+      pivot: {x: 0.60372275, y: 0.45379007}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09e6f7358c863ba488c1f815e7a80dd0
+      internalID: -353015794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_1
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 300
+        width: 140
+        height: 169
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76dd2970b3a2f1047af83e3c390bd7d6
+      internalID: 357171176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_2
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 153
+        width: 143
+        height: 153
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8246d8dbfb9f934899578ed28c94149
+      internalID: -1501196408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_3
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 151
+        width: 144
+        height: 145
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e58d1af6a8aceb41829f0d84578933a
+      internalID: -1785327331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_4
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 155
+        width: 157
+        height: 154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ffb1bda76455884d9ebed3e177f7127
+      internalID: 1648190517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_5
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 0
+        width: 138
+        height: 150
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e39ef9f24770f3a4e969ff0118dcc634
+      internalID: -1400248411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_6
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 2
+        width: 144
+        height: 144
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03df888e10636854a96093f802b5336d
+      internalID: 2110999515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_7
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 1
+        width: 154
+        height: 148
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e3483c3f123a2445a898694bc937e96
+      internalID: -14813763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID:
+    spriteID: 08b10fb6ad42dc446a53d67bce9b5638
     internalID: 0
     vertices: []
-    indices:
+    indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
-  mipmapLimitGroupName:
-  output:
-    textureImportInstructions:
-      compressedFormat: 0
-      uncompressedFormat: 0
-      desiredFormat: 0
-      usageMode: 0
-      colorSpace: 0
-      androidETC2FallbackFormat: 0
-      width: 0
-      height: 0
-      depth: 0
-      cubeIntermediateSize: 0
-      cubeMode: 0
-      cubeLayout: 0
-      compressionQuality: 0
-      androidETC2FallbackDownscale: 0
-      vtOnly: 0
-    sourceTextureInformation:
-      width: 0
-      height: 0
-      doesTextureContainAlpha: 0
-      sourceWasHDR: 0
-    importInspectorWarnings:
+    nameFileIdTable:
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_0: -353015794
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_1: 357171176
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_2: -1501196408
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_3: -1785327331
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_4: 1648190517
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_5: -1400248411
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_6: 2110999515
+      sactx-0-512x512-ASTC 6x6-Dragon-c5b366b7_7: -14813763
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
