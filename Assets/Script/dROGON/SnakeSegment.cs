@@ -1,7 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class SnakeSegment : MonoBehaviour
+public class SnakeSegment : MonoBehaviour 
 {
     [Header("Segment Settings")]
     public int segmentIndex;
