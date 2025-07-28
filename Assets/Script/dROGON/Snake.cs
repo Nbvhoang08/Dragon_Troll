@@ -41,15 +41,9 @@ public class Snake : MonoBehaviour
     private bool isReversing = false;
     private List<SegmentType> segmentSequence = new List<SegmentType>();
 
-    // Thêm cache cho smooth rotation
-    private Dictionary<int, float> segmentCurrentRotations = new Dictionary<int, float>();
-    private Dictionary<int, bool> segmentFlipStates = new Dictionary<int, bool>();
-
-
-
-
-
-
+    // Thêm cache cho smooth rotation - SỬA ĐỔI: Sử dụng SnakeSegment làm key thay vì int
+    private Dictionary<SnakeSegment, float> segmentCurrentRotations = new Dictionary<SnakeSegment, float>();
+    private Dictionary<SnakeSegment, bool> segmentFlipStates = new Dictionary<SnakeSegment, bool>();
 
     void Start()
     {
@@ -116,10 +110,11 @@ public class Snake : MonoBehaviour
         segmentCurrentRotations.Clear();
         segmentFlipStates.Clear();
 
+        // SỬA ĐỔI: Sử dụng segment object làm key
         for (int i = 0; i < segments.Count; i++)
         {
-            segmentCurrentRotations[i] = 0f;
-            segmentFlipStates[i] = false;
+            segmentCurrentRotations[segments[i]] = 0f;
+            segmentFlipStates[segments[i]] = false;
         }
     }
 
@@ -199,7 +194,7 @@ public class Snake : MonoBehaviour
         }
     }
 
-    public  BusColor ToBusColor( SegmentType segmentType)
+    public BusColor ToBusColor(SegmentType segmentType)
     {
         // Bỏ qua Head và Tail khi chuyển đổi
         if (segmentType == SegmentType.Head || segmentType == SegmentType.Tail)
@@ -207,7 +202,6 @@ public class Snake : MonoBehaviour
 
         return (BusColor)((int)segmentType - 1);
     }
-
 
     void MoveSnake()
     {
@@ -244,23 +238,23 @@ public class Snake : MonoBehaviour
             // Smooth position update
             segments[i].UpdatePosition(targetPosition, positionSmoothSpeed);
 
-            // Smooth rotation update - ĐÂY LÀ PHẦN QUAN TRỌNG
-            UpdateSegmentRotationSmooth(segments[i], targetRotation, i);
+            // Smooth rotation update - SỬA ĐỔI: Truyền segment object thay vì index
+            UpdateSegmentRotationSmooth(segments[i], targetRotation);
         }
     }
 
-    // PHƯƠNG THỨC MỚI: Cập nhật rotation mượt mà
-    void UpdateSegmentRotationSmooth(SnakeSegment segment, Vector3 targetRotation, int segmentIndex)
+    // PHƯƠNG THỨC SỬA ĐỔI: Sử dụng segment object thay vì segmentIndex
+    void UpdateSegmentRotationSmooth(SnakeSegment segment, Vector3 targetRotation)
     {
         float targetRotationZ = targetRotation.z;
 
-        // Lấy rotation hiện tại từ cache
-        if (!segmentCurrentRotations.ContainsKey(segmentIndex))
+        // Lấy rotation hiện tại từ cache - SỬA ĐỔI: Sử dụng segment làm key
+        if (!segmentCurrentRotations.ContainsKey(segment))
         {
-            segmentCurrentRotations[segmentIndex] = targetRotationZ;
+            segmentCurrentRotations[segment] = targetRotationZ;
         }
 
-        float currentRotationZ = segmentCurrentRotations[segmentIndex];
+        float currentRotationZ = segmentCurrentRotations[segment];
 
         // Tính toán shortest angle để tránh quay vòng 360 độ
         float deltaRotation = Mathf.DeltaAngle(currentRotationZ, targetRotationZ);
@@ -268,20 +262,20 @@ public class Snake : MonoBehaviour
         // Smooth lerp rotation
         float smoothedRotation = currentRotationZ + deltaRotation * rotationSmoothSpeed * Time.deltaTime;
 
-        // Update cache
-        segmentCurrentRotations[segmentIndex] = smoothedRotation;
+        // Update cache - SỬA ĐỔI: Sử dụng segment làm key
+        segmentCurrentRotations[segment] = smoothedRotation;
 
         // Normalize rotation để tính flip
         float normalizedRotation = NormalizeAngle(smoothedRotation);
 
-        // Kiểm tra flip state với hysteresis để tránh flickering
-        bool currentFlipState = segmentFlipStates.ContainsKey(segmentIndex) ? segmentFlipStates[segmentIndex] : false;
+        // Kiểm tra flip state với hysteresis để tránh flickering - SỬA ĐỔI: Sử dụng segment làm key
+        bool currentFlipState = segmentFlipStates.ContainsKey(segment) ? segmentFlipStates[segment] : false;
         bool shouldFlipY = ShouldFlipWithHysteresis(normalizedRotation, currentFlipState);
 
         // Chỉ update flip nếu có thay đổi
         if (shouldFlipY != currentFlipState)
         {
-            segmentFlipStates[segmentIndex] = shouldFlipY;
+            segmentFlipStates[segment] = shouldFlipY;
             segment.SetFlipY(shouldFlipY);
         }
 
@@ -387,18 +381,26 @@ public class Snake : MonoBehaviour
 
     public void OnSegmentDestroyed(int segmentIndex)
     {
-        // Clean up rotation cache for destroyed segment
-        if (segmentCurrentRotations.ContainsKey(segmentIndex))
-            segmentCurrentRotations.Remove(segmentIndex);
-        if (segmentFlipStates.ContainsKey(segmentIndex))
-            segmentFlipStates.Remove(segmentIndex);
+        // SỬA ĐỔI: Tìm segment bị destroy và clean up cache
+        SnakeSegment destroyedSegment = segments.Find(s => s != null && s.segmentIndex == segmentIndex);
+        if (destroyedSegment != null)
+        {
+            // Clean up rotation cache for destroyed segment
+            if (segmentCurrentRotations.ContainsKey(destroyedSegment))
+                segmentCurrentRotations.Remove(destroyedSegment);
+            if (segmentFlipStates.ContainsKey(destroyedSegment))
+                segmentFlipStates.Remove(destroyedSegment);
+        }
 
         ReconnectSegments(segmentIndex);
-
     }
 
     void ReconnectSegments(int destroyedIndex)
     {
+        // SỬA ĐỔI: Giữ lại rotation data trước khi rebuild segments list
+        Dictionary<SnakeSegment, float> preservedRotations = new Dictionary<SnakeSegment, float>(segmentCurrentRotations);
+        Dictionary<SnakeSegment, bool> preservedFlipStates = new Dictionary<SnakeSegment, bool>(segmentFlipStates);
+
         List<SnakeSegment> newSegments = new List<SnakeSegment>();
         foreach (var segment in segments)
         {
@@ -414,28 +416,35 @@ public class Snake : MonoBehaviour
             return;
         }
 
-        // Rebuild rotation cache với index mới
-        Dictionary<int, float> newRotationCache = new Dictionary<int, float>();
-        Dictionary<int, bool> newFlipCache = new Dictionary<int, bool>();
+        // SỬA ĐỔI: Rebuild cache mà vẫn giữ lại rotation state của các segment còn sống
+        segmentCurrentRotations.Clear();
+        segmentFlipStates.Clear();
 
         for (int i = 0; i < segments.Count; i++)
         {
             segments[i].SetSegmentIndex(i);
 
-            // Preserve rotation state nếu có thể
-            int oldIndex = segments[i].segmentIndex;
-            if (segmentCurrentRotations.ContainsKey(oldIndex))
+            // Preserve rotation state từ data đã lưu trước đó
+            if (preservedRotations.ContainsKey(segments[i]))
             {
-                newRotationCache[i] = segmentCurrentRotations[oldIndex];
+                segmentCurrentRotations[segments[i]] = preservedRotations[segments[i]];
             }
-            if (segmentFlipStates.ContainsKey(oldIndex))
+            else
             {
-                newFlipCache[i] = segmentFlipStates[oldIndex];
+                // Nếu không có data cũ, khởi tạo với rotation hiện tại
+                segmentCurrentRotations[segments[i]] = segments[i].transform.eulerAngles.z;
+            }
+
+            if (preservedFlipStates.ContainsKey(segments[i]))
+            {
+                segmentFlipStates[segments[i]] = preservedFlipStates[segments[i]];
+            }
+            else
+            {
+                // Nếu không có data cũ, khởi tạo với flip state hiện tại
+                segmentFlipStates[segments[i]] = segments[i].IsFlippedY();
             }
         }
-
-        segmentCurrentRotations = newRotationCache;
-        segmentFlipStates = newFlipCache;
 
         UpdateSegmentSortingOrders();
 
