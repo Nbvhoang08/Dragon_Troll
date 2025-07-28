@@ -310,7 +310,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 101350026534665100, guid: f5132bb08bcaf5a4ab1d5ab74604569f, type: 3}
   firePoint: {fileID: 4633769143891474564}
   bulletSprite: {fileID: 0}
-  fireCooldown: 0.25
+  fireCooldown: 0.5
   muzzleRenderer: {fileID: 7206411010567073819}
   flashScale: 1.5
   flashDuration: 0.15
