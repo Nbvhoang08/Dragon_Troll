@@ -94,6 +94,7 @@ public class Canon : MonoBehaviour
 
     IEnumerator FiringLoop()
     {
+        yield return new WaitForSeconds(0.6f);
         while (true)
         {
             if (_currAmmo <= 0)
@@ -102,18 +103,21 @@ public class Canon : MonoBehaviour
                 yield break;
             }
 
-            Collider2D target = GetTargetInFront();
+            BodyTest target = GetTargetInFront();
 
             if (target != null && !isFiring)
             {
+                
                 isFiring = true;
-                Vector2 dir = (target.transform.position - firePoint.position).normalized;
+                target.targetLocked = true;
+                Vector2 dir = (target.gameObject.transform.position - firePoint.position).normalized;
                 float targetAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, targetAngle - 90f);
                 CanonFireAnimation(() =>
                 {
                     // CannonFire Process
                     PlayFlash(); 
+                    
                     Bullet bullet = Pool.Instance.bulletEffect;
                    
                     bullet.transform.position = firePoint.position;
@@ -121,9 +125,10 @@ public class Canon : MonoBehaviour
                     float angle = Mathf.Atan2(dirToTarget.y, dirToTarget.x) * Mathf.Rad2Deg;
                     bullet.transform.rotation = Quaternion.Euler(0f, 0f, angle - 90);
 
-                    bullet.GetComponent<Bullet>().SetTarget(target.transform,_busColor);
+                    bullet.GetComponent<Bullet>().SetTarget(target,_busColor);
                     bullet.GetComponent<SpriteRenderer>().sprite = bulletSprite;
-                   
+
+                    SoundManager.Instance.Play(Constants.LaunchSound);
                     _currAmmo--;
                     _slot.bulletNumberText.text = _currAmmo.ToString();
                     isFiring = false;
@@ -141,29 +146,55 @@ public class Canon : MonoBehaviour
     public void PlayFlash()
     {
         muzzleRenderer.enabled = true;
-        muzzleRenderer.color = new Color(1, 1, 1, 1); // Reset alpha
+        muzzleRenderer.material.color = new Color(1, 1, 1, 1); // Reset alpha
 
-        // Scale to lớn hơn rồi thu nhỏ lại
+        // Scale to larger size and then shrink back
         muzzleRenderer.transform.localScale = Vector3.one * flashScale;
 
         Sequence muzzleSeq = DOTween.Sequence();
-        muzzleSeq.Append(muzzleRenderer.DOFade(0f, flashDuration).SetEase(Ease.OutQuad)); // Fade Out
-        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad)); // Scale về gốc
-        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Ẩn đi sau khi xong
+        Material muzzleMaterial = muzzleRenderer.material; // Access the material of the SpriteRenderer
+        muzzleSeq.Append(muzzleMaterial.DOFade(0f, flashDuration).SetEase(Ease.OutQuad)); // Fade Out
+        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad)); // Scale back to original
+        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Disable after completion
     }
-    private Collider2D GetTargetInFront()
+
+    private BodyTest GetTargetInFront()
     {
         Vector3 screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
         Vector3 screenRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0));
         float fireWidth = Mathf.Abs(screenRight.x - screenLeft.x);
 
         float centerX = (screenLeft.x + screenRight.x) / 2f;
-        float centerY = transform.position.y + fireHeight / 2f; // ← dùng transform thay vì firePoint
+        float centerY = transform.position.y + fireHeight / 2f;
 
         Vector2 boxCenterWorld = new Vector2(centerX, centerY);
         Vector2 boxSize = new Vector2(fireWidth, fireHeight);
 
-        return Physics2D.OverlapBox(boxCenterWorld, boxSize, 0f, targetMask);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenterWorld, boxSize, 0f, targetMask);
+
+        BodyTest bestTarget = null;
+        int lowestIndex = int.MaxValue;
+
+        foreach (var hit in hits)
+        {
+            BodyTest body = hit.GetComponent<BodyTest>();
+            if (body == null) continue;
+
+            // So màu
+            if (body.busColor != _busColor) continue;
+
+            // Nếu đã bị khóa bởi súng khác
+            if (body.targetLocked) continue;
+
+            // Lấy target có index nhỏ nhất
+            if (body.index < lowestIndex)
+            {
+                bestTarget = body;
+                lowestIndex = body.index;
+            }
+        }
+
+        return bestTarget;
     }
 
     private void OnDrawGizmosSelected()

@@ -94,6 +94,7 @@ public class Slot : MonoBehaviour
     }
     public void OnOccupied(BusColor busColor , BusType busType) 
     {
+        SoundManager.Instance.Play(Constants.Occupied);
         canon.gameObject.SetActive(true);
         CanonVisualData data = canon.canonData.GetVisualData(busColor);
         canon.CanonSpriteConfig(data);

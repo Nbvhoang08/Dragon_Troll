@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Core.PathCore;
+using static DG.Tweening.ShortcutExtensions;
 
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-
 [ExecuteAlways]
 public class BusVisual : MonoBehaviour
 {
-   
     public BusColor busColor;
     public BusType busType;
     public BusVisualData visualData;
@@ -20,14 +21,13 @@ public class BusVisual : MonoBehaviour
     public SpriteRenderer BottomSprite;
     public SpriteRenderer TopSprite;
 
-
     public void VisualConfig()
     {
         if (visualData == null) return;
 
         float angle = transform.eulerAngles.z;
         BusDirection dir = GetBusDirection(angle);
-        
+
         var spriteData = visualData.GetSprites(busType, busColor, dir);
         if (spriteData != null)
         {
@@ -38,7 +38,7 @@ public class BusVisual : MonoBehaviour
                 {
                     TopSprite.flipX = true;
                 }
-                else 
+                else
                 {
                     TopSprite.flipX = false;
                 }
@@ -46,12 +46,11 @@ public class BusVisual : MonoBehaviour
                 {
                     BottomSprite.sprite = spriteData.bottomSprite;
                     BottomSprite.transform.localRotation = Quaternion.Euler(0f, 0f, -transform.eulerAngles.z);
-
                 }
-
             }
         }
     }
+
     public void AnimationFadeOut(System.Action onComplete = null)
     {
         Sequence seq = DOTween.Sequence();
@@ -63,14 +62,13 @@ public class BusVisual : MonoBehaviour
 
         seq.AppendCallback(() =>
         {
-            TopSprite.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
-            BottomSprite.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
+            TopSprite.material.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
+            BottomSprite.material.DOFade(0f, 0.25f).SetEase(Ease.OutQuad);
         });
 
         seq.AppendInterval(0.2f);
         seq.OnComplete(() => onComplete?.Invoke());
     }
-
 
     private BusDirection GetBusDirection(float angle)
     {
@@ -85,7 +83,6 @@ public class BusVisual : MonoBehaviour
         if (angle >= 202.5f && angle < 247.5f) return BusDirection.DownLeft;
         if (angle >= 247.5f && angle < 292.5f) return BusDirection.Left;
         return BusDirection.UpLeft;
-
     }
 
 #if UNITY_EDITOR
@@ -106,15 +103,11 @@ public class BusVisual : MonoBehaviour
                 if (!Application.isPlaying)
                     EditorUtility.SetDirty(this);
             }
-            else 
+            else
             {
                 VisualConfig();
             }
-
         };
     }
 #endif
 }
-
-
-

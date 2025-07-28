@@ -72,14 +72,18 @@ public class Spawner : MonoBehaviour
             BusColor color = finalScales[i];
             Vector3 spawnPos = startPos + new Vector3(i * offsetX, 0, 0);
             GameObject square = Instantiate(squarePrefab, spawnPos, Quaternion.identity, spawnParent);
-
+            BodyTest test = square.GetComponent<BodyTest>(); // Đặt thứ tự hiển thị
             SpriteRenderer sr = square.GetComponent<SpriteRenderer>();
             if (sr != null && colorMap.ContainsKey(color))
             {
+                test.busColor = color;
                 sr.color = colorMap[color];
+                
             }
-
+            test.targetLocked = false;
+            test.index = i; 
             square.name = $"{i + 1}_{color}";
+    
         }
     }
 
