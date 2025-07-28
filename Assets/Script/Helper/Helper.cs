@@ -7,7 +7,8 @@
     Purple,
     Pink,
     Brown,
-    Cyan
+    Cyan,
+    None,
 }
 public enum BusType
 {

@@ -103,7 +103,7 @@ public class Canon : MonoBehaviour
                 yield break;
             }
 
-            BodyTest target = GetTargetInFront();
+            SnakeSegment target = GetTargetInFront();
 
             if (target != null && !isFiring)
             {
@@ -158,7 +158,7 @@ public class Canon : MonoBehaviour
         muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Disable after completion
     }
 
-    private BodyTest GetTargetInFront()
+    private SnakeSegment GetTargetInFront()
     {
         Vector3 screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
         Vector3 screenRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0));
@@ -172,12 +172,12 @@ public class Canon : MonoBehaviour
 
         Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenterWorld, boxSize, 0f, targetMask);
 
-        BodyTest bestTarget = null;
+        SnakeSegment bestTarget = null;
         int lowestIndex = int.MaxValue;
 
         foreach (var hit in hits)
         {
-            BodyTest body = hit.GetComponent<BodyTest>();
+            SnakeSegment body = hit.GetComponent<SnakeSegment>();
             if (body == null) continue;
 
             // So màu

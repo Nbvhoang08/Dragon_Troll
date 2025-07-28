@@ -12,7 +12,7 @@ public static class SegmentTypeExtensions
     {
         // Bỏ qua Head và Tail khi chuyển đổi
         if (segmentType == SegmentType.Head || segmentType == SegmentType.Tail)
-            return BusColor.Red; // Default
+            return BusColor.None; // Default
 
         return (BusColor)((int)segmentType - 1);
     }

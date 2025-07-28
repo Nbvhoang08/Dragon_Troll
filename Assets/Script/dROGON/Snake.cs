@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Linq;
+using System;
 
 public class Snake : MonoBehaviour
 {
@@ -23,10 +24,7 @@ public class Snake : MonoBehaviour
     [Range(0.05f, 0.5f)]
     public float positionSmoothSpeed = 0.1f;
 
-    [Header("Prefabs")]
-    public GameObject segmentPrefab;
-    public GameObject headPrefab;
-    public GameObject tailPrefab;
+    public DragonSpriteData dragonSpriteData;
 
     [Header("Path")]
     public SnakePathCreator pathCreator;
@@ -47,8 +45,11 @@ public class Snake : MonoBehaviour
     private Dictionary<int, float> segmentCurrentRotations = new Dictionary<int, float>();
     private Dictionary<int, bool> segmentFlipStates = new Dictionary<int, bool>();
 
-    [Header("Game Events")]
-    public UnityEngine.Events.UnityEvent OnReachEnd;
+
+
+
+
+
 
     void Start()
     {
@@ -131,9 +132,9 @@ public class Snake : MonoBehaviour
         if (spawner != null)
         {
             var spawnerSequence = spawner.GetFinalScales();
-            foreach (var busColor in spawnerSequence)
+            foreach (var _busColor in spawnerSequence)
             {
-                segmentSequence.Add(busColor.ToSegmentType());
+                segmentSequence.Add(_busColor.ToSegmentType());
             }
         }
         else
@@ -154,30 +155,19 @@ public class Snake : MonoBehaviour
         {
             SegmentType segmentType = segmentSequence[i];
 
-            GameObject prefabToUse = segmentPrefab;
-            if (segmentType == SegmentType.Head && headPrefab != null)
-            {
-                prefabToUse = headPrefab;
-            }
-            else if (segmentType == SegmentType.Tail && tailPrefab != null)
-            {
-                prefabToUse = tailPrefab;
-            }
-
-            GameObject segmentObj = Instantiate(prefabToUse, transform);
-
-            SnakeSegment segment = segmentObj.GetComponent<SnakeSegment>() ?? segmentObj.AddComponent<SnakeSegment>();
-
+            SnakeSegment segment = Pool.Instance.segment;
             segment.SetSegmentIndex(i);
-            segment.SetSegmentType(segmentType);
+            segment.SetSegmentType(dragonSpriteData.GetVisualData(segmentType).dragonSegment);
+           
+            segment.busColor = ToBusColor(segmentType);
             segment.segmentSpacing = segmentSpacing;
 
             float initialOffset = GetTotalDistanceUpToSegment(i);
             Vector3 startPos = GetPositionOnPath(-initialOffset / pathLength);
-            segmentObj.transform.position = startPos;
-
+            segment.gameObject.transform.position = startPos;
+            segment.gameObject.transform.parent = transform;
             segments.Add(segment);
-            segmentObj.name = $"Segment_{i}_{segmentType}";
+            segment.gameObject.name = $"Segment_{i}_{segmentType}";
         }
 
         UpdateSegmentSortingOrders();
@@ -209,6 +199,16 @@ public class Snake : MonoBehaviour
         }
     }
 
+    public  BusColor ToBusColor( SegmentType segmentType)
+    {
+        // Bỏ qua Head và Tail khi chuyển đổi
+        if (segmentType == SegmentType.Head || segmentType == SegmentType.Tail)
+            return BusColor.None; // Default
+
+        return (BusColor)((int)segmentType - 1);
+    }
+
+
     void MoveSnake()
     {
         if (pathPositions == null || pathLength <= 0) return;
@@ -223,7 +223,6 @@ public class Snake : MonoBehaviour
             if (!isReversing)
             {
                 isMoving = false;
-                OnReachEnd?.Invoke();
                 return;
             }
         }
@@ -396,10 +395,6 @@ public class Snake : MonoBehaviour
 
         ReconnectSegments(segmentIndex);
 
-        if (GameManagerExtension.Instance != null)
-        {
-            GameManagerExtension.Instance.NotifySegmentDestroyed();
-        }
     }
 
     void ReconnectSegments(int destroyedIndex)
@@ -416,7 +411,6 @@ public class Snake : MonoBehaviour
 
         if (segments.Count == 0)
         {
-            OnReachEnd?.Invoke();
             return;
         }
 

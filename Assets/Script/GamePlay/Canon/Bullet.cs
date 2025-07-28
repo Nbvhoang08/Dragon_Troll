@@ -6,9 +6,9 @@ public class Bullet : GenericPoolableObject, IPoolable
 {
     [Header("Settings")]
     public float speed =1f;
-    private BodyTest _target;
+    private SnakeSegment _target;
     public BusColor color;
-    public void SetTarget(BodyTest target,BusColor canonColor)
+    public void SetTarget(SnakeSegment target,BusColor canonColor)
     {
         _target = target;
         color = canonColor;
@@ -38,7 +38,7 @@ public class Bullet : GenericPoolableObject, IPoolable
         bodyEffect.transform.position = _target.gameObject.transform.position;
         bodyEffect.transform.localScale = Vector3.one * 2f;
         SoundManager.Instance.Play(Constants.BodySound);
-        _target.GetComponent<BodyTest>().OnHit();
+        _target.GetComponent<SnakeSegment>().OnHit();
         _target = null; // Clear target after hit
         ReturnToPool();
 

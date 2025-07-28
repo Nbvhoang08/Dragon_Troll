@@ -12,10 +12,6 @@ public class GameManager1 : MonoBehaviour
     {
         InitializeGame();
 
-        if (snakeController != null)
-        {
-            snakeController.OnReachEnd.AddListener(OnGameOver);
-        }
 
         if (showInstructions)
         {
@@ -62,19 +58,7 @@ public class GameManager1 : MonoBehaviour
         }
     }
 
-    void OnGameOver()
-    {
-        if (gameEnded) return;
-        gameEnded = true;
-        Debug.Log("GAME OVER! Rắn đã đến thành!");
-
-        if (snakeController != null)
-        {
-            snakeController.StopSnake();
-        }
-        Debug.Log("Ấn R để chơi lại!");
-    }
-
+   
     void OnVictory()
     {
         if (gameEnded) return;
@@ -132,17 +116,6 @@ public class GameManager1 : MonoBehaviour
         if (snakeController != null) snakeController.ToggleReverse();
     }
 
-    public bool IsGameEnded() => gameEnded;
     public bool IsSnakeReversing() => snakeController != null ? snakeController.IsReversing() : false;
 }
 
-public static class GameManagerExtension
-{
-    public static GameManager1 Instance
-    {
-        get
-        {
-            return GameObject.FindObjectOfType<GameManager1>();
-        }
-    }
-}

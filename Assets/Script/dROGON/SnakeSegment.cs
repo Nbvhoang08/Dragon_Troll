@@ -1,7 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class SnakeSegment : MonoBehaviour 
+public class SnakeSegment : GenericPoolableObject , IColorBody
 {
     [Header("Segment Settings")]
     public int segmentIndex;
@@ -18,20 +18,29 @@ public class SnakeSegment : MonoBehaviour
 
     private Snake parentSnake;
     private bool isDestroyed = false;
-    private Vector3 originalScale;
+
 
     // Smooth movement tweeners
     private Tweener positionTweener;
     private bool isFlippedY = false;
+    public BusColor busColor { get; set; }
+    public bool targetLocked { get; set; } // THÊM MỚI: Thuộc tính để xác định xem đối tượng có bị khóa mục tiêu hay không
+    public int index { get; set; } // THÊM MỚI: Thuộc tính index để xác định vị trí của đối tượng trong chuỗi
+    public void OnHit() 
+    {
+        DestroySegment();
+
+    }
+
 
     void Start()
     {
         parentSnake = GetComponentInParent<Snake>();
-        originalScale = transform.localScale;
+
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.sprite = segmentType.GetSprite();
+            //spriteRenderer.sprite = segmentType.GetSprite();
             spriteRenderer.color = Color.white;
         }
 
@@ -94,7 +103,7 @@ public class SnakeSegment : MonoBehaviour
                 {
                     parentSnake.OnSegmentDestroyed(segmentIndex);
                 }
-                Destroy(gameObject);
+                ReturnToPool();
             });
 
         if (spriteRenderer != null)
@@ -103,17 +112,17 @@ public class SnakeSegment : MonoBehaviour
         }
     }
 
-    public void SetSegmentIndex(int index)
+    public void SetSegmentIndex(int ind)
     {
-        segmentIndex = index;
+        segmentIndex = ind;
+        index = ind; // Cập nhật thuộc tính index
     }
 
-    public void SetSegmentType(SegmentType type)
+    public void SetSegmentType(Sprite sprite)
     {
-        segmentType = type;
         if (spriteRenderer != null)
         {
-            spriteRenderer.sprite = segmentType.GetSprite();
+            spriteRenderer.sprite = sprite;
             spriteRenderer.color = Color.white;
         }
     }
