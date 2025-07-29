@@ -12,8 +12,20 @@ public class Slot : MonoBehaviour
     [HideInInspector]public TextMeshProUGUI bulletNumberText;
     public int bulletNumber = 0;
     public Canon canon;
+    [SerializeField] private SpriteRenderer BackGround;
+    public ParticleSystem[] particleSystems;
 
+    private void OnEnable()
+    {
+        GameEvents.RemoveCanon += SetLayer;
+        GameEvents.BoostFire += BoostFireHeight;
+    }
 
+    private void OnDisable()
+    {
+        GameEvents.RemoveCanon -= SetLayer;
+        GameEvents.BoostFire -= BoostFireHeight;
+    }
     private void Start()
     {
         canon = GetComponentInChildren<Canon>();
@@ -41,7 +53,24 @@ public class Slot : MonoBehaviour
             Debug.DrawLine(origin, end, Color.red, 1f);
         }
     }
-    
+
+    public void OnMouseDown()
+    {
+        if (GameManager.Instance.gameState != GameState.RemoveCanon) return;
+        particleSystems[0].Play();
+        canon.DoneAnimation();
+        GameManager.Instance.RemoveCanonDone();
+    }
+
+
+    public void BoostFireHeight()
+    {
+        if (canon != null)
+        {
+            particleSystems[2].Play();
+            canon.fireHeight =10;
+        }
+    }
 
     public void SetOccupied(bool occupied)
     {
@@ -109,4 +138,10 @@ public class Slot : MonoBehaviour
         }
         
     }
+
+    public void SetLayer(bool higher) 
+    {
+        BackGround.sortingOrder = higher? 59 :0;
+    }
+
 }

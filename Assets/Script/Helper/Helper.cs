@@ -39,6 +39,9 @@ public enum GameState
 {
     Starting,
     Playing,
+    RemoveCanon,
+    Slip,
     Paused,
     GameOver
 }
+

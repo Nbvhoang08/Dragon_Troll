@@ -28,6 +28,24 @@ public class Canon : MonoBehaviour
     public float flashDuration = 0.15f;
 
     private BusColor _busColor;
+
+    private void OnEnable()
+    {
+        GameEvents.RemoveCanon += SetLayer;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.RemoveCanon -= SetLayer;
+    }
+
+
+
+
+
+
+
+
     private void Awake()
     {
         _slot = GetComponentInParent<Slot>();
@@ -48,7 +66,7 @@ public class Canon : MonoBehaviour
         transform.localScale = Vector3.one;
         Sequence SetupRecoil = DOTween.Sequence();
         SetupRecoil.Append(canonSprite.transform.DOScale(Vector3.zero, 0.1f).SetEase(Ease.OutQuad));
-        SetupRecoil.Append(canonSprite.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InOutBounce));
+        SetupRecoil.Append(canonSprite.transform.DOScale(Vector3.one*0.75f, 0.25f).SetEase(Ease.InOutBounce));
         
     }
     public void CanonFire() 
@@ -90,6 +108,12 @@ public class Canon : MonoBehaviour
         _currAmmo = AmmoAmount;
         if (firingRoutine != null) StopCoroutine(firingRoutine);
         firingRoutine = StartCoroutine(FiringLoop());
+    }
+
+    public void SetLayer(bool Higher)
+    {
+        bottom.sortingOrder = Higher ? 60 : 20; // Đặt layer cho bottom sprite
+        canonSprite.sortingOrder = Higher ? 65 : 25 ; // Đặt layer cho canon sprite
     }
 
     IEnumerator FiringLoop()

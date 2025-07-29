@@ -12,6 +12,10 @@ public class Conveyor : MonoBehaviour
     private bool _isPaused = false;
     [SerializeField] private List<Bus> busList = new();
 
+    public Renderer targetRenderer;  // Renderer có material muốn scroll
+    public Vector2 scrollSpeed = new Vector2(0.5f, 0f); // cuộn theo X
+
+    private Material _mat;
     private void OnEnable()
     {
         GameEvents.ConveyorRun += SetConveyorState;
@@ -23,6 +27,7 @@ public class Conveyor : MonoBehaviour
         GameEvents.ConveyorRun -= SetConveyorState;
         GameEvents.ConveyorBusListUpdate -= UpdateListBus;
     }
+
 
 
     private void Start()
@@ -39,7 +44,7 @@ public class Conveyor : MonoBehaviour
                 bus.IsOnConveyor = true; 
             }
         }
-        
+        _mat = targetRenderer.material;
     }
 
 
@@ -56,6 +61,10 @@ public class Conveyor : MonoBehaviour
                 bus.transform.position = new Vector3(resetX, bus.transform.position.y, bus.transform.position.z);
             }
         }
+        // Offset theo thời gian
+        Vector2 offset = _mat.mainTextureOffset;
+        offset += scrollSpeed * Time.deltaTime;
+        _mat.mainTextureOffset = offset;
     }
 
     

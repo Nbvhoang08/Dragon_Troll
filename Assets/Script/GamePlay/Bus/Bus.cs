@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using  DG.Tweening;
 using System.Linq;
-public class Bus : MonoBehaviour
+public class Bus : GenericPoolableObject
 {
     [Header("State Setting")]
-
     public bool isMoving = false;
     public float shakeDuration = 0.2f;
     public float shakeStrength = 0.2f;
@@ -23,16 +22,17 @@ public class Bus : MonoBehaviour
 
     private int _currentIndex = 0;
     private Vector3 startPosition;
-    private Collider2D _collider;
-    private BusVisual _busVisual;
+    public Collider2D _collider;
+    [SerializeField] public BusVisual _busVisual;
     private bool Clocked;
+    public WareHouse wareHouse;
     public bool IsOnConveyor { get; set; } = false; // Biến để xác định xem bus có đang trên băng chuyền 
     void Start()
     {
-        _collider = GetComponent<Collider2D>();
+        //_collider = GetComponent<Collider2D>();
         
         startPosition = transform.position;
-        _busVisual = GetComponent<BusVisual>();
+        //_busVisual = GetComponent<BusVisual>();
     }
 
     private void OnMouseDown()
@@ -55,6 +55,11 @@ public class Bus : MonoBehaviour
             startPosition = transform.position; 
         }
 
+        if(GameManager.Instance.gameState == GameState.Slip) 
+        {
+            _collider.enabled = false; 
+            GameManager.Instance.SlipDone(); 
+        }
         RaycastHit2D hit = Physics2D.Linecast(origin, end, LayerMask.GetMask("Road"));
 
         if (hit.collider != null)
@@ -68,6 +73,7 @@ public class Bus : MonoBehaviour
         else
         {
             Debug.DrawLine(origin, end, Color.red, 1f);
+            targetSlot.SetOccupied(false); // Nếu không tìm thấy đường đi, hủy bỏ việc đặt slot
         }
     }
 
@@ -221,7 +227,7 @@ public class Bus : MonoBehaviour
         MoveToNextPoint();
     }
 
-    void MoveToNextPoint()
+    void MoveToNextPoint()  
     {
         if (_currentIndex >= _finalPath.Count - 1)
         {
@@ -233,7 +239,11 @@ public class Bus : MonoBehaviour
                 transform.position = startPosition; // Trả về vị trí ban đầu
             });
             GameEvents.ConveyorRun?.Invoke(false);
-            if(IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this); // Cập nhật danh sách bus trên băng chuyền
+            if(IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this); 
+            if (wareHouse != null) 
+            {
+                wareHouse.NextBus();
+            }
             return;
         }
         Vector3 from = _finalPath[_currentIndex];

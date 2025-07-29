@@ -8,7 +8,7 @@ public class Pool : Singleton<Pool>
     [SerializeField] EffectPool CollisionEffect, ClickedEffect;
     [SerializeField] EffectPool[] BodyEffect;
     [SerializeField] SegmentPool segmentPool;
-
+    [SerializeField] BusPool busPool;
 
     public Bullet bulletEffect { get { return bulletPool.GetPrefabInstance(); } }
     public Effect collisionEffect { get { return CollisionEffect.GetPrefabInstance(); } }
@@ -17,5 +17,7 @@ public class Pool : Singleton<Pool>
     {
         return BodyEffect[(int)typeBody].GetPrefabInstance();
     }
+
+    public Bus bus { get { return busPool.GetPrefabInstance(); } }
     public SnakeSegment segment { get { return segmentPool.GetPrefabInstance(); } }
 }

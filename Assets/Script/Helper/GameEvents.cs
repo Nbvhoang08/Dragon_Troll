@@ -11,6 +11,8 @@ public static class GameEvents
     public static Action RestartGameAction;
     public static Action<bool> ConveyorRun;
     public static Action<Bus> ConveyorBusListUpdate;
+    public static Action<bool> RemoveCanon;
+    public static Action BoostFire;
 }
 
 
