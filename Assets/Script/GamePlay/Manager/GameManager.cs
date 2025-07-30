@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System.Linq;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -11,6 +13,57 @@ public class GameManager : Singleton<GameManager>
     public Slot[] slots;
     public GameState gameState = GameState.Playing;
     public GameObject DarkBG;
+    public PlayerData playerData;
+    public Transform _levelContainer;
+    public LevelData levelDatas;
+    public int currentLevel
+    {
+        get => playerData.currentLevel;
+        set
+        {
+            playerData.currentLevel = value;
+            SavePlayerData(playerData);
+        }
+    }
+    public int gold
+    {
+        get => playerData.gold;
+        set
+        {
+            playerData.gold = value;
+            SavePlayerData(playerData);
+        }
+    }
+
+
+    public override void Awake()
+    {
+        base.Awake();
+        playerData =LoadPlayerData();
+    }
+    void Start()
+    {
+       
+        SetUpLevel();
+    }
+
+    public void SetUpLevel() 
+    {
+        int childCount = _levelContainer.transform.childCount;
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform child = _levelContainer.transform.GetChild(i);
+            Destroy(child.gameObject);
+        }
+
+
+
+        GameObject currentLV = Instantiate(levelDatas.CurrentLevel(currentLevel).LevelPrefab, _levelContainer);
+    }
+
+
+
+
 
     public Slot ValidSlot()
     {
@@ -106,4 +159,75 @@ public class GameManager : Singleton<GameManager>
               DarkBG.SetActive(false); // Tắt object sau khi fade
           });
     }
+
+
+
+    //Player Data
+    private  string FolderPath => Path.Combine(Application.persistentDataPath, "SaveData");
+    private string FilePath => Path.Combine(FolderPath, "PlayerData.json");
+
+    /// <summary>
+    /// Lưu dữ liệu người chơi ra JSON
+    /// </summary>
+    public  void SavePlayerData(PlayerData data)
+    {
+        if (!Directory.Exists(FolderPath))
+            Directory.CreateDirectory(FolderPath);
+
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(FilePath, json);
+
+        Debug.Log($"✅ PlayerData saved to {FilePath}");
+    }
+
+    /// <summary>
+    /// Load dữ liệu người chơi từ JSON
+    /// </summary>
+    public  PlayerData LoadPlayerData()
+    {
+        if (!File.Exists(FilePath))
+        {
+            // Nếu chưa có file, tạo mới với giá trị mặc định
+            PlayerData defaultData = new PlayerData();
+            SavePlayerData(defaultData);
+            return defaultData;
+        }
+
+        string json = File.ReadAllText(FilePath);
+        PlayerData data = JsonUtility.FromJson<PlayerData>(json);
+
+        if (data == null)
+        {
+            // Nếu file hỏng thì reset
+            data = new PlayerData();
+            SavePlayerData(data);
+        }
+
+        return data;
+    }
+
+    /// <summary>
+    /// Xóa dữ liệu người chơi
+    /// </summary>
+    public  void DeletePlayerData()
+    {
+        if (File.Exists(FilePath))
+        {
+            File.Delete(FilePath);
+            Debug.Log("🗑 PlayerData deleted.");
+        }
+    }
+
+
+
 }
+
+
+[System.Serializable]
+public class PlayerData
+{
+    public int currentLevel = 1;  // Level hiện tại (mặc định 1)
+    public int gold = 9999;       // Vàng hiện tại (mặc định 9999)
+}
+
+

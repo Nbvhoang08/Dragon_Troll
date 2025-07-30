@@ -1,0 +1,58 @@
+{
+    "levels": [
+        {
+            "levelIndex": 1,
+            "ammoEntries": [
+                {
+                    "color": 4,
+                    "count": 6
+                },
+                {
+                    "color": 1,
+                    "count": 6
+                },
+                {
+                    "color": 0,
+                    "count": 6
+                },
+                {
+                    "color": 3,
+                    "count": 6
+                }
+            ]
+        },
+        {
+            "levelIndex": 2,
+            "ammoEntries": [
+                {
+                    "color": 4,
+                    "count": 16
+                },
+                {
+                    "color": 2,
+                    "count": 16
+                },
+                {
+                    "color": 5,
+                    "count": 10
+                },
+                {
+                    "color": 7,
+                    "count": 10
+                },
+                {
+                    "color": 1,
+                    "count": 12
+                },
+                {
+                    "color": 0,
+                    "count": 10
+                },
+                {
+                    "color": 3,
+                    "count": 6
+                }
+            ]
+        }
+    ]
+}
