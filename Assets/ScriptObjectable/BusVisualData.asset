@@ -209,7 +209,7 @@ MonoBehaviour:
       topSprite: {fileID: 21300000, guid: e29320da1a56a6c4f89a134f5eab6d40, type: 2}
       bottomSprite: {fileID: 21300000, guid: 028321ba5bd99314fa99b566d4bbfa6c, type: 2}
     - direction: 1
-      topSprite: {fileID: 21300000, guid: 6b714a944682d7a45aabfdd4c4ad3ff9, type: 2}
+      topSprite: {fileID: 21300000, guid: e77bc6a00b9cefc419d598dc28507d83, type: 2}
       bottomSprite: {fileID: 21300000, guid: 028321ba5bd99314fa99b566d4bbfa6c, type: 2}
     - direction: 2
       topSprite: {fileID: 21300000, guid: d801b653c23ae674381c1cba1d78f8bc, type: 2}
