@@ -396,16 +396,16 @@ MonoBehaviour:
     directionSprites:
     - direction: 0
       topSprite: {fileID: 21300000, guid: 208cb42275af76241a69afa856b3c75a, type: 2}
-      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+      bottomSprite: {fileID: 21300000, guid: f26d6cfbbe465a141b47665046c9cb67, type: 2}
     - direction: 1
       topSprite: {fileID: 21300000, guid: 8c650a18401e09b4198dfb866e3a4b8b, type: 2}
-      bottomSprite: {fileID: 21300000, guid: 99e9c441a9efaee4fa47c853a49feee2, type: 2}
+      bottomSprite: {fileID: 21300000, guid: f26d6cfbbe465a141b47665046c9cb67, type: 2}
     - direction: 2
       topSprite: {fileID: 21300000, guid: f267b47fbb9130f479f74976bcf5f0d3, type: 2}
-      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6a4258667cca9724190f6e7f40ed99a0, type: 2}
     - direction: 3
       topSprite: {fileID: 21300000, guid: f267b47fbb9130f479f74976bcf5f0d3, type: 2}
-      bottomSprite: {fileID: 21300000, guid: 193fe5f1c1db3eb40a133f2f3a4e3d9e, type: 2}
+      bottomSprite: {fileID: 21300000, guid: 6a4258667cca9724190f6e7f40ed99a0, type: 2}
     - direction: 4
       topSprite: {fileID: 21300000, guid: 2cd9f74154881c642b9d3abdc144980f, type: 2}
       bottomSprite: {fileID: 0}
@@ -661,3 +661,10 @@ MonoBehaviour:
     - direction: 7
       topSprite: {fileID: 21300000, guid: d3527324b4d699c4e933b42f08b4a96d, type: 2}
       bottomSprite: {fileID: 0}
+  colliderDatas:
+  - size: {x: 0.6, y: 0.6}
+    offset: {x: 0, y: 0.15}
+  - size: {x: 0.6, y: 0.9}
+    offset: {x: 0, y: 0.15}
+  - size: {x: 0.6, y: 1.2}
+    offset: {x: 0, y: 0.15}

@@ -1,0 +1,28 @@
+{
+    "ammoEntries": [
+        {
+            "color": 2,
+            "count": 20
+        },
+        {
+            "color": 1,
+            "count": 14
+        },
+        {
+            "color": 0,
+            "count": 52
+        },
+        {
+            "color": 5,
+            "count": 10
+        },
+        {
+            "color": 4,
+            "count": 4
+        },
+        {
+            "color": 3,
+            "count": 10
+        }
+    ]
+}
