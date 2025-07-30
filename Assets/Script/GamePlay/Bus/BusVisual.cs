@@ -49,8 +49,9 @@ public class BusVisual : MonoBehaviour
                 }
             }
         }
+        RecenterCollider();
     }
-
+    
     public void AnimationFadeOut(System.Action onComplete = null)
     {
         Sequence seq = DOTween.Sequence();
@@ -110,4 +111,22 @@ public class BusVisual : MonoBehaviour
         };
     }
 #endif
+
+
+    public void RecenterCollider()
+    {
+        BoxCollider2D col = GetComponent<BoxCollider2D>();
+        if (col == null || visualData == null) return;
+
+        BusDirection dir = GetBusDirection(transform.eulerAngles.z);
+        BusColliderData colData = visualData.GetCollider(busType, dir);
+
+        col.size = colData.size;
+        col.offset = colData.offset;
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(col);
+#endif
+    }
+
 }

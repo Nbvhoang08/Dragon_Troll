@@ -60,7 +60,11 @@ public class GameManager : Singleton<GameManager>
     {
         gameState = GameState.Slip;
         DarkBG.SetActive(true);
-        
+        SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+        if (sr == null) return;
+        // Fade alpha từ 0 -> 1
+        sr.material.DOFade(1f, 1f)
+          .SetEase(Ease.Linear);
     }
     public void SlipDone()
     {
@@ -82,12 +86,24 @@ public class GameManager : Singleton<GameManager>
         gameState = GameState.RemoveCanon;
         DarkBG.SetActive(true);
         DarkBG.GetComponent<SpriteRenderer>().sortingOrder = 55;
+        SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+        if (sr == null) return;
+        // Fade alpha từ 0 -> 1
+        sr.material.DOFade(1f, 0.5f)
+          .SetEase(Ease.Linear);
         GameEvents.RemoveCanon?.Invoke(true);
 
     }
     public void RemoveCanonDone() 
     {
-        DarkBG.SetActive(false);
         gameState = GameState.Playing;
+        SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+        if (sr == null) return;
+        sr.material.DOFade(0f, 1f)
+          .SetEase(Ease.Linear)
+          .OnComplete(() =>
+          {
+              DarkBG.SetActive(false); // Tắt object sau khi fade
+          });
     }
 }

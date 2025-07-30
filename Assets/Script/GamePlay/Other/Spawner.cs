@@ -4,12 +4,7 @@ using System.Linq;
 
 public class Spawner : MonoBehaviour
 {
-    [System.Serializable]
-    public class AmmoEntry
-    {
-        public BusColor color;
-        public int count;
-    }
+    
 
     public List<AmmoEntry> ammoList; // Kéo trong inspector
     public int maxChunkSize = 4;
@@ -104,4 +99,10 @@ public class Spawner : MonoBehaviour
     {
         return ammoList != null && ammoList.Count > 0 && GetTotalAmmoCount() > 0;
     }
+}
+[System.Serializable]
+public class AmmoEntry
+{
+    public BusColor color;
+    public int count;
 }
