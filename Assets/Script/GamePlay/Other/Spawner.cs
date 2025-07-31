@@ -1,21 +1,66 @@
-﻿ using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 public class Spawner : MonoBehaviour
 {
-    
-
-    public List<AmmoEntry> ammoList; // Kéo trong inspector
+    public List<AmmoEntry> ammoList; // Kéo trong inspector hoặc load từ JSON
     public int maxChunkSize = 4;
+    public int CurrentLevelIndex = 1; // Level cần load từ JSON
 
     private List<BusColor> finalScales = new List<BusColor>();
 
     void Start()
     {
+        // Nếu ammoList rỗng thì load từ JSON database theo LevelIndex
+        if (ammoList == null || ammoList.Count == 0)
+        {
+            LoadAmmoByLevelIndex(GameManager.Instance.currentLevel);
+        }
+
         GenerateScaleSequence();
-        
     }
+
+    /// <summary>
+    /// Load ammo data từ AmmoDatabase.json theo LevelIndex
+    /// </summary>
+    public void LoadAmmoByLevelIndex(int levelIndex)
+    {
+        string path = Path.Combine(Application.dataPath, "Export Level", "AmmoDatabase.json");
+
+        if (!File.Exists(path))
+        {
+            Debug.LogError($"Không tìm thấy file JSON Database: {path}");
+            return;
+        }
+
+        string json = File.ReadAllText(path);
+
+        AmmoDatabase database = JsonUtility.FromJson<AmmoDatabase>(json);
+
+        if (database == null || database.levels == null || database.levels.Count == 0)
+        {
+            Debug.LogError("AmmoDatabase rỗng hoặc không hợp lệ!");
+            return;
+        }
+
+        // Tìm Level trùng index
+        AmmoSummaryWrapper levelData = database.levels.Find(l => l.levelIndex == levelIndex);
+
+        if (levelData == null)
+        {
+            Debug.LogError($"Không tìm thấy dữ liệu cho Level {levelIndex} trong AmmoDatabase!");
+            return;
+        }
+
+        ammoList = new List<AmmoEntry>(levelData.ammoEntries);
+        Debug.Log($"✅ Loaded Level {levelIndex} với {ammoList.Sum(a => a.count)} đạn.");
+    }
+
+    // ======================================
+    // Toàn bộ code GenerateSequence giữ nguyên
+    // ======================================
 
     void GenerateScaleSequence()
     {
@@ -34,16 +79,11 @@ public class Spawner : MonoBehaviour
             }
         }
 
-        // Shuffle chunk list
         Shuffle(allChunks);
 
-        // Flatten into final list
         finalScales = allChunks.SelectMany(chunk => chunk).ToList();
     }
 
-  
-    
-    // Fisher-Yates Shuffle
     void Shuffle<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
@@ -53,56 +93,42 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    // *** THÊM METHOD PUBLIC ĐỂ SNAKE CÓ THỂ TRUY CẬP ***
-    
-    // Trả về danh sách các màu đã được generate
-    public List<BusColor> GetFinalScales()
-    {
-        // Nếu chưa generate thì generate ngay
-        if (finalScales == null || finalScales.Count == 0)
-        {
-            GenerateScaleSequence();
-        }
-        return new List<BusColor>(finalScales); // Trả về copy để tránh modify từ bên ngoài
-    }
+    public List<BusColor> GetFinalScales() =>
+        finalScales == null || finalScales.Count == 0 ? new List<BusColor>() : new List<BusColor>(finalScales);
 
-    // Trả về tổng số đạn
-    public int GetTotalAmmoCount()
-    {
-        if (ammoList == null) return 0;
-        return ammoList.Sum(ammo => ammo.count);
-    }
+    public int GetTotalAmmoCount() => ammoList?.Sum(a => a.count) ?? 0;
 
-    // Trả về thông tin chi tiết về ammo
-    public Dictionary<BusColor, int> GetAmmoBreakdown()
-    {
-        var breakdown = new Dictionary<BusColor, int>();
-        if (ammoList != null)
-        {
-            foreach (var ammo in ammoList)
-            {
-                breakdown[ammo.color] = ammo.count;
-            }
-        }
-        return breakdown;
-    }
+    public Dictionary<BusColor, int> GetAmmoBreakdown() =>
+        ammoList?.ToDictionary(a => a.color, a => a.count) ?? new Dictionary<BusColor, int>();
 
-    // Force regenerate sequence (useful cho restart game)
     public void RegenerateSequence()
     {
         GenerateScaleSequence();
         Debug.Log($"Đã regenerate sequence với {finalScales.Count} đạn: {string.Join(", ", finalScales)}");
     }
 
-    // Kiểm tra xem có đủ ammo để tạo rắn không
-    public bool HasValidAmmo()
-    {
-        return ammoList != null && ammoList.Count > 0 && GetTotalAmmoCount() > 0;
-    }
+    public bool HasValidAmmo() => ammoList != null && ammoList.Count > 0 && GetTotalAmmoCount() > 0;
 }
+
+
+
+
+
+[System.Serializable]
+public class AmmoSummaryWrapper
+{
+    public int levelIndex;
+    public List<AmmoEntry> ammoEntries;
+}
+
 [System.Serializable]
 public class AmmoEntry
 {
     public BusColor color;
     public int count;
+}
+[System.Serializable]
+public class AmmoDatabase
+{
+    public List<AmmoSummaryWrapper> levels = new List<AmmoSummaryWrapper>();
 }

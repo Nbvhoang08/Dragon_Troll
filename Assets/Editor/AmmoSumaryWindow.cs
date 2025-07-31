@@ -1,21 +1,21 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 using System.IO;
 
-[System.Serializable]
-public class AmmoSummaryWrapper
-{
-    public List<AmmoEntry> ammoEntries;
-}
+
 
 public class AmmoSummaryWindow : EditorWindow
 {
     private Vector2 scrollPos;
     private List<AmmoEntry> ammoList = new List<AmmoEntry>();
 
-    // Tên file mặc định
-    private string fileName = "AmmoSummary";
+    private int levelIndex = 1;
+    private string statusMessage = "";
+
+    private string folderPath => Path.Combine(Application.dataPath, "Export Level");
+    private string databasePath => Path.Combine(folderPath, "AmmoDatabase.json");
 
     [MenuItem("Tools/Bus/Ammo Summary")]
     public static void OpenWindow()
@@ -28,28 +28,36 @@ public class AmmoSummaryWindow : EditorWindow
         GUILayout.Label("Ammo Summary Tool", EditorStyles.boldLabel);
         GUILayout.Space(5);
 
-        // Ô nhập tên file
+        // Level Index
         GUILayout.BeginHorizontal();
-        GUILayout.Label("File Name:", GUILayout.Width(70));
-        fileName = GUILayout.TextField(fileName);
+        GUILayout.Label("Level Index:", GUILayout.Width(80));
+        levelIndex = EditorGUILayout.IntField(levelIndex);
         GUILayout.EndHorizontal();
 
         GUILayout.Space(5);
 
+        // Các nút chức năng
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("Recalculate Ammo"))
         {
             ammoList = AmmoCounter.CalculateAmmoInSceneAndWareHouse();
+            statusMessage = $"Calculated {ammoList.Count} ammo colors for Level {levelIndex}";
         }
 
-        if (GUILayout.Button("Export JSON"))
+        if (GUILayout.Button("Save/Update Level"))
         {
-            ExportToJsonInProject();
+            SaveOrUpdateLevel();
+        }
+
+        if (GUILayout.Button("Open Folder"))
+        {
+            OpenFolder();
         }
         GUILayout.EndHorizontal();
 
         GUILayout.Space(10);
 
+        // Hiển thị danh sách ammo
         scrollPos = GUILayout.BeginScrollView(scrollPos, GUILayout.Height(300));
         if (ammoList.Count == 0)
         {
@@ -63,12 +71,14 @@ public class AmmoSummaryWindow : EditorWindow
             }
         }
         GUILayout.EndScrollView();
+
+        GUILayout.Space(5);
+
+        if (!string.IsNullOrEmpty(statusMessage))
+            EditorGUILayout.HelpBox(statusMessage, MessageType.Info);
     }
 
-    /// <summary>
-    /// Xuất JSON vào folder Assets/Export Level/
-    /// </summary>
-    private void ExportToJsonInProject()
+    private void SaveOrUpdateLevel()
     {
         if (ammoList.Count == 0)
         {
@@ -76,24 +86,47 @@ public class AmmoSummaryWindow : EditorWindow
             return;
         }
 
-        // Đảm bảo folder Export Level tồn tại
-        string exportFolder = Path.Combine(Application.dataPath, "Export Level");
-        if (!Directory.Exists(exportFolder))
-            Directory.CreateDirectory(exportFolder);
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
 
-        // Ghép đường dẫn file
-        string safeFileName = string.IsNullOrEmpty(fileName) ? "AmmoSummary" : fileName;
-        string fullPath = Path.Combine(exportFolder, safeFileName + ".json");
+        AmmoDatabase database = LoadDatabase();
 
-        // Serialize JSON
-        AmmoSummaryWrapper wrapper = new AmmoSummaryWrapper { ammoEntries = ammoList };
-        string json = JsonUtility.ToJson(wrapper, true);
+        // Xóa data cũ nếu tồn tại
+        database.levels.RemoveAll(l => l.levelIndex == levelIndex);
 
-        File.WriteAllText(fullPath, json);
+        // Thêm data mới
+        AmmoSummaryWrapper newLevel = new AmmoSummaryWrapper
+        {
+            levelIndex = levelIndex,
+            ammoEntries = new List<AmmoEntry>(ammoList)
+        };
+        database.levels.Add(newLevel);
 
-        // Refresh Unity để nhận diện file
+        // Ghi file JSON
+        string json = JsonUtility.ToJson(database, true);
+        File.WriteAllText(databasePath, json);
+
         AssetDatabase.Refresh();
 
-        EditorUtility.DisplayDialog("Export Complete", $"Saved to:\nAssets/Export Level/{safeFileName}.json", "OK");
+        statusMessage = $"✅ Level {levelIndex} saved/updated to AmmoDatabase.json";
+        Debug.Log(statusMessage);
+    }
+
+    private AmmoDatabase LoadDatabase()
+    {
+        if (!File.Exists(databasePath))
+            return new AmmoDatabase();
+
+        string json = File.ReadAllText(databasePath);
+        return JsonUtility.FromJson<AmmoDatabase>(json) ?? new AmmoDatabase();
+    }
+
+    private void OpenFolder()
+    {
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
+        EditorUtility.RevealInFinder(folderPath);
     }
 }
+
