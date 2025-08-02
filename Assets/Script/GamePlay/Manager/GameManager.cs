@@ -9,6 +9,7 @@ public class GameManager : Singleton<GameManager>
 {
     public List<Transform> checkpoints;
     public bool MusicOn = true;
+    public bool SoundOn = true;
     public bool HapticOn = true;
     public Slot[] slots;
     public GameState gameState = GameState.Playing;
@@ -16,6 +17,10 @@ public class GameManager : Singleton<GameManager>
     public PlayerData playerData;
     public Transform _levelContainer;
     public LevelData levelDatas;
+    public bool isGameOver = false;
+    public bool isGameWin = false;
+    public bool InGame = false;
+
     public int currentLevel
     {
         get => playerData.currentLevel;
@@ -40,6 +45,7 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         playerData =LoadPlayerData();
+        InGame = false;
     }
     void Start()
     {
@@ -61,8 +67,39 @@ public class GameManager : Singleton<GameManager>
         GameObject currentLV = Instantiate(levelDatas.CurrentLevel(currentLevel).LevelPrefab, _levelContainer);
     }
 
-
-
+    public bool ChangeSetting(TypeSetting typeSetting)
+    {
+        switch (typeSetting)
+        {
+            case TypeSetting.Music:
+                MusicOn = !MusicOn;
+                if (MusicOn)
+                    SoundManager.Instance.PlayBGMusic();
+                else
+                    SoundManager.Instance.MuteMusic();
+                return MusicOn;
+            case TypeSetting.Sound:
+                SoundOn = !SoundOn;
+                return SoundOn;
+            case TypeSetting.Haptic:
+                HapticOn = !HapticOn;
+                return HapticOn;
+        }
+        return false;
+    }
+    public bool GetStateSetting(TypeSetting typeSetting)
+    {
+        switch (typeSetting)
+        {
+            case TypeSetting.Music:
+                return MusicOn;
+            case TypeSetting.Sound:
+                return SoundOn;
+            case TypeSetting.Haptic:
+                return HapticOn;
+        }
+        return false;
+    }
 
 
     public Slot ValidSlot()
@@ -109,7 +146,7 @@ public class GameManager : Singleton<GameManager>
     {
         GameEvents.BoostFire?.Invoke();
     }
-    void SlipBus()
+    public void SlipBus()
     {
         gameState = GameState.Slip;
         DarkBG.SetActive(true);
@@ -134,7 +171,7 @@ public class GameManager : Singleton<GameManager>
           });
 
     }
-    void RemoveCanon() 
+    public void RemoveCanon() 
     {
         gameState = GameState.RemoveCanon;
         DarkBG.SetActive(true);

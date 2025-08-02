@@ -28,7 +28,7 @@ using System;
 		{
 			if (_instance != null)
 			{
-				GameObject.Destroy(this.gameObject);
+				Destroy(this.gameObject);
 				return;
 			}
 
@@ -39,8 +39,8 @@ using System;
 			{
 				Debug.LogError("Awake xong van NULL " + typeof(T));
 			}
-		//Debug.LogError("Awake of " + typeof(T));
-		if (dontDestroyOnload)
+
+			if (dontDestroyOnload)
 				DontDestroyOnLoad(this);
 		}
 
