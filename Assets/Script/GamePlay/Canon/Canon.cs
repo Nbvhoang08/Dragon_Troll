@@ -40,12 +40,6 @@ public class Canon : MonoBehaviour
     }
 
 
-
-
-
-
-
-
     private void Awake()
     {
         _slot = GetComponentInParent<Slot>();
@@ -129,7 +123,7 @@ public class Canon : MonoBehaviour
 
             SnakeSegment target = GetTargetInFront();
 
-            if (target != null && !isFiring)
+            if (target != null && !isFiring && GameManager.Instance.gameState == GameState.Playing)
             {
                 
                 isFiring = true;

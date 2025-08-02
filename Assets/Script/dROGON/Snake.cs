@@ -9,6 +9,11 @@ public class Snake : MonoBehaviour
     [Header("Snake Settings")]
     public float moveSpeed = 2f;
     public float reverseSpeed = 1.5f;
+    [Header("Initial Speed Settings")]
+    [Tooltip("Tốc độ di chuyển ban đầu (từ đầu đến giữa path)")]
+    public float initialSpeed = 5f;
+    [Tooltip("Tốc độ di chuyển sau khi đến giữa path")]
+    public float normalSpeed = 1f;
     [Tooltip("Khoảng cách chung giữa các đốt thân.")]
     public float segmentSpacing = 1f;
     [Tooltip("Khoảng cách riêng giữa đầu rắn và đốt thân đầu tiên.")]
@@ -32,6 +37,12 @@ public class Snake : MonoBehaviour
     [Header("Spawner Integration")]
     public Spawner spawner;
 
+    [Header("Win/Lose Conditions")]
+    [Tooltip("Thời gian chờ tại điểm cuối trước khi thua (giây)")]
+    public float endPointWaitTime = 5f;
+    [Tooltip("Khoảng cách để coi như rắn đã đến điểm cuối")]
+    public float endPointThreshold = 0.1f;
+
     private List<SnakeSegment> segments = new List<SnakeSegment>();
     private Vector3[] pathPositions;
     private Vector3[] pathRotations;
@@ -41,22 +52,43 @@ public class Snake : MonoBehaviour
     private bool isReversing = false;
     private List<SegmentType> segmentSequence = new List<SegmentType>();
 
-    // Thêm cache cho smooth rotation - SỬA ĐỔI: Sử dụng SnakeSegment làm key thay vì int
     private Dictionary<SnakeSegment, float> segmentCurrentRotations = new Dictionary<SnakeSegment, float>();
     private Dictionary<SnakeSegment, bool> segmentFlipStates = new Dictionary<SnakeSegment, bool>();
 
-    void Start()
+    // Win/Lose variables
+    private bool isAtEndPoint = false;
+    private float endPointTimer = 0f;
+    private bool gameEnded = false;
+    private bool hasReachedMiddle = false; // Đã đến giữa path chưa
+    private bool canCheckWinLose = false; // Có thể kiểm tra win/lose chưa
+
+    private void OnEnable()
     {
-        Invoke(nameof(InitializeSnake), 0.01f);
+        GameEvents.GameStart += OnGameStart;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.GameStart -= OnGameStart;
+    }
+
+
+    void OnGameStart()
+    {
+        Invoke(nameof(InitializeSnake), 0.2f);
     }
 
     void Update()
     {
+        if(GameManager.Instance.gameState != GameState.Playing) return;
         HandleInput();
         if (isMoving && segments.Count > 0 && pathPositions != null)
         {
             MoveSnake();
         }
+        
+        // Kiểm tra điều kiện thắng/thua
+        CheckWinLoseConditions();
     }
 
     void HandleInput()
@@ -110,7 +142,6 @@ public class Snake : MonoBehaviour
         segmentCurrentRotations.Clear();
         segmentFlipStates.Clear();
 
-        // SỬA ĐỔI: Sử dụng segment object làm key
         for (int i = 0; i < segments.Count; i++)
         {
             segmentCurrentRotations[segments[i]] = 0f;
@@ -121,7 +152,6 @@ public class Snake : MonoBehaviour
     void GenerateSegmentSequence()
     {
         segmentSequence.Clear();
-
         segmentSequence.Add(SegmentType.Head);
 
         if (spawner != null)
@@ -149,11 +179,9 @@ public class Snake : MonoBehaviour
         for (int i = 0; i < segmentSequence.Count; i++)
         {
             SegmentType segmentType = segmentSequence[i];
-
             SnakeSegment segment = Pool.Instance.segment;
             segment.SetSegmentIndex(i);
             segment.SetSegmentType(dragonSpriteData.GetVisualData(segmentType).dragonSegment);
-           
             segment.busColor = ToBusColor(segmentType);
             segment.segmentSpacing = segmentSpacing;
 
@@ -172,15 +200,11 @@ public class Snake : MonoBehaviour
     private float GetTotalDistanceUpToSegment(int index)
     {
         if (index <= 0) return 0f;
-
-        if (segmentSequence.Count == 2 && index == 1)
-        {
-            return headToFirstSegmentSpacing;
-        }
+        if (segmentSequence.Count == 2 && index == 1) return headToFirstSegmentSpacing;
 
         float distanceToPrevious = GetTotalDistanceUpToSegment(index - 1);
 
-        if (index == segmentSequence.Count - 1)
+        if (index == segments.Count - 1)
         {
             return distanceToPrevious + lastSegmentToTailSpacing;
         }
@@ -196,10 +220,8 @@ public class Snake : MonoBehaviour
 
     public BusColor ToBusColor(SegmentType segmentType)
     {
-        // Bỏ qua Head và Tail khi chuyển đổi
         if (segmentType == SegmentType.Head || segmentType == SegmentType.Tail)
-            return BusColor.None; // Default
-
+            return BusColor.None;
         return (BusColor)((int)segmentType - 1);
     }
 
@@ -207,24 +229,37 @@ public class Snake : MonoBehaviour
     {
         if (pathPositions == null || pathLength <= 0) return;
 
-        float currentSpeed = isReversing ? reverseSpeed : moveSpeed;
+        // Kiểm tra xem đã đến giữa path chưa
+        if (!hasReachedMiddle && currentPathProgress >= 0.5f)
+        {
+            hasReachedMiddle = true;
+            canCheckWinLose = true;
+            Debug.Log("Rắn đã đến giữa path! Chuyển sang tốc độ bình thường và bắt đầu tính win/lose.");
+        }
+
+        // Chọn tốc độ dựa trên vị trí hiện tại
+        float currentSpeed;
+        if (!hasReachedMiddle)
+        {
+            // Chưa đến giữa path - dùng tốc độ ban đầu
+            currentSpeed = isReversing ? initialSpeed : initialSpeed;
+        }
+        else
+        {
+            // Đã đến giữa path - dùng tốc độ bình thường
+            currentSpeed = isReversing ? normalSpeed : normalSpeed;
+        }
+
         float speedMultiplier = isReversing ? -1f : 1f;
         currentPathProgress += (currentSpeed / pathLength) * Time.deltaTime * speedMultiplier;
 
-        if (currentPathProgress >= 1f)
-        {
-            currentPathProgress = 1f;
-            if (!isReversing)
-            {
-                isMoving = false;
-                return;
-            }
-        }
-        else if (currentPathProgress <= 0f)
-        {
-            currentPathProgress = 0f;
-        }
+        currentPathProgress = Mathf.Clamp01(currentPathProgress);
 
+        UpdateAllSegmentPositions();
+    }
+
+    void UpdateAllSegmentPositions()
+    {
         for (int i = 0; i < segments.Count; i++)
         {
             if (segments[i] == null || segments[i].IsDestroyed()) continue;
@@ -235,78 +270,54 @@ public class Snake : MonoBehaviour
             Vector3 targetPosition = GetPositionOnPath(segmentProgress);
             Vector3 targetRotation = GetRotationOnPath(segmentProgress);
 
-            // Smooth position update
             segments[i].UpdatePosition(targetPosition, positionSmoothSpeed);
-
-            // Smooth rotation update - SỬA ĐỔI: Truyền segment object thay vì index
             UpdateSegmentRotationSmooth(segments[i], targetRotation);
         }
     }
 
-    // PHƯƠNG THỨC SỬA ĐỔI: Sử dụng segment object thay vì segmentIndex
     void UpdateSegmentRotationSmooth(SnakeSegment segment, Vector3 targetRotation)
     {
         float targetRotationZ = targetRotation.z;
-
-        // Lấy rotation hiện tại từ cache - SỬA ĐỔI: Sử dụng segment làm key
         if (!segmentCurrentRotations.ContainsKey(segment))
         {
             segmentCurrentRotations[segment] = targetRotationZ;
         }
-
         float currentRotationZ = segmentCurrentRotations[segment];
-
-        // Tính toán shortest angle để tránh quay vòng 360 độ
         float deltaRotation = Mathf.DeltaAngle(currentRotationZ, targetRotationZ);
-
-        // Smooth lerp rotation
         float smoothedRotation = currentRotationZ + deltaRotation * rotationSmoothSpeed * Time.deltaTime;
-
-        // Update cache - SỬA ĐỔI: Sử dụng segment làm key
         segmentCurrentRotations[segment] = smoothedRotation;
 
-        // Normalize rotation để tính flip
         float normalizedRotation = NormalizeAngle(smoothedRotation);
-
-        // Kiểm tra flip state với hysteresis để tránh flickering - SỬA ĐỔI: Sử dụng segment làm key
         bool currentFlipState = segmentFlipStates.ContainsKey(segment) ? segmentFlipStates[segment] : false;
         bool shouldFlipY = ShouldFlipWithHysteresis(normalizedRotation, currentFlipState);
 
-        // Chỉ update flip nếu có thay đổi
         if (shouldFlipY != currentFlipState)
         {
             segmentFlipStates[segment] = shouldFlipY;
             segment.SetFlipY(shouldFlipY);
         }
 
-        // Apply smooth rotation
         Vector3 smoothRotationVector = new Vector3(0, 0, smoothedRotation);
         segment.UpdateRotation(smoothRotationVector);
     }
 
-    // PHƯƠNG THỨC MỚI: Flip với hysteresis để tránh flickering
     bool ShouldFlipWithHysteresis(float rotationZ, bool currentFlipState)
     {
-        const float hysteresisMargin = 5f; // 5 độ margin để tránh flickering
-
+        const float hysteresisMargin = 5f;
         if (currentFlipState)
         {
-            // Nếu đang flip, chỉ unflip khi rotation về khoảng an toàn
             return !(rotationZ <= (90f - hysteresisMargin) && rotationZ >= (-90f + hysteresisMargin));
         }
         else
         {
-            // Nếu không flip, chỉ flip khi rotation ra khỏi khoảng an toàn
             return rotationZ > (90f + hysteresisMargin) || rotationZ < (-90f - hysteresisMargin);
         }
     }
 
     float NormalizeAngle(float angle)
     {
-        while (angle > 180f)
-            angle -= 360f;
-        while (angle < -180f)
-            angle += 360f;
+        while (angle > 180f) angle -= 360f;
+        while (angle < -180f) angle += 360f;
         return angle;
     }
 
@@ -348,20 +359,16 @@ public class Snake : MonoBehaviour
         float totalLength = 0f;
         float targetLength = progress * pathLength;
 
-        // IMPROVED: Interpolate rotation giữa các điểm để mượt hơn
         for (int i = 1; i < pathPositions.Length; i++)
         {
             float segmentLength = Vector3.Distance(pathPositions[i - 1], pathPositions[i]);
             if (totalLength + segmentLength >= targetLength)
             {
-                // Interpolate rotation giữa 2 điểm
                 if (segmentLength > 0)
                 {
                     float t = (targetLength - totalLength) / segmentLength;
                     Vector3 rot1 = pathRotations[i - 1];
                     Vector3 rot2 = pathRotations[i];
-
-                    // Sử dụng Mathf.LerpAngle cho Z rotation để tránh jump 360 độ
                     float lerpedZ = Mathf.LerpAngle(rot1.z, rot2.z, t);
                     return new Vector3(rot1.x, rot1.y, lerpedZ);
                 }
@@ -369,7 +376,6 @@ public class Snake : MonoBehaviour
             }
             totalLength += segmentLength;
         }
-
         return pathRotations[pathRotations.Length - 1];
     }
 
@@ -381,11 +387,9 @@ public class Snake : MonoBehaviour
 
     public void OnSegmentDestroyed(int segmentIndex)
     {
-        // SỬA ĐỔI: Tìm segment bị destroy và clean up cache
         SnakeSegment destroyedSegment = segments.Find(s => s != null && s.segmentIndex == segmentIndex);
         if (destroyedSegment != null)
         {
-            // Clean up rotation cache for destroyed segment
             if (segmentCurrentRotations.ContainsKey(destroyedSegment))
                 segmentCurrentRotations.Remove(destroyedSegment);
             if (segmentFlipStates.ContainsKey(destroyedSegment))
@@ -397,7 +401,6 @@ public class Snake : MonoBehaviour
 
     void ReconnectSegments(int destroyedIndex)
     {
-        // SỬA ĐỔI: Giữ lại rotation data trước khi rebuild segments list
         Dictionary<SnakeSegment, float> preservedRotations = new Dictionary<SnakeSegment, float>(segmentCurrentRotations);
         Dictionary<SnakeSegment, bool> preservedFlipStates = new Dictionary<SnakeSegment, bool>(segmentFlipStates);
 
@@ -411,27 +414,20 @@ public class Snake : MonoBehaviour
         }
         segments = newSegments;
 
-        if (segments.Count == 0)
-        {
-            return;
-        }
+        if (segments.Count == 0) return;
 
-        // SỬA ĐỔI: Rebuild cache mà vẫn giữ lại rotation state của các segment còn sống
         segmentCurrentRotations.Clear();
         segmentFlipStates.Clear();
 
         for (int i = 0; i < segments.Count; i++)
         {
             segments[i].SetSegmentIndex(i);
-
-            // Preserve rotation state từ data đã lưu trước đó
             if (preservedRotations.ContainsKey(segments[i]))
             {
                 segmentCurrentRotations[segments[i]] = preservedRotations[segments[i]];
             }
             else
             {
-                // Nếu không có data cũ, khởi tạo với rotation hiện tại
                 segmentCurrentRotations[segments[i]] = segments[i].transform.eulerAngles.z;
             }
 
@@ -441,7 +437,6 @@ public class Snake : MonoBehaviour
             }
             else
             {
-                // Nếu không có data cũ, khởi tạo với flip state hiện tại
                 segmentFlipStates[segments[i]] = segments[i].IsFlippedY();
             }
         }
@@ -450,15 +445,16 @@ public class Snake : MonoBehaviour
 
         if (pathLength > 0)
         {
-            currentPathProgress -= (segmentSpacing * 1f / pathLength);
+            currentPathProgress -= (segmentSpacing / pathLength);
             currentPathProgress = Mathf.Max(0, currentPathProgress);
         }
+
+        UpdateAllSegmentPositions();
     }
 
     void UpdateSegmentSortingOrders()
     {
         if (segments == null) return;
-
         int totalSegments = segments.Count;
         for (int i = 0; i < totalSegments; i++)
         {
@@ -470,6 +466,107 @@ public class Snake : MonoBehaviour
         }
     }
 
+    // ============ WIN/LOSE FUNCTIONS ============
+
+    // Hàm kiểm tra điều kiện thắng/thua
+    void CheckWinLoseConditions()
+    {
+        // Chỉ kiểm tra win/lose sau khi đã đến giữa path
+        if (gameEnded || !canCheckWinLose) return;
+        
+        CheckWinCondition();
+        CheckLoseCondition();
+    }
+
+    // Hàm kiểm tra điều kiện thắng - chỉ cần hết các đốt thân (không tính đầu và đuôi)
+    void CheckWinCondition()
+    {
+        // Sử dụng hàm có sẵn để đếm số đốt có thể phá hủy còn lại
+        // Hàm này đã loại trừ đầu và đuôi rắn
+        int destructibleSegments = GetDestructibleSegmentCount();
+        
+       
+        
+        if (destructibleSegments <= 2)
+        {
+            Debug.Log("WIN");
+            gameEnded = true;
+            OnWin();
+        }
+    }
+
+    // Hàm kiểm tra điều kiện thua
+    void CheckLoseCondition()
+    {
+        if (pathPositions == null || pathPositions.Length == 0) return;
+        
+        // Kiểm tra xem rắn có đang ở điểm cuối không (currentPathProgress >= 1.0f)
+        bool currentlyAtEndPoint = currentPathProgress >= 1.0f;
+        
+        if (currentlyAtEndPoint)
+        {
+            if (!isAtEndPoint)
+            {
+                // Vừa mới đến điểm cuối, bắt đầu đếm thời gian
+                isAtEndPoint = true;
+                endPointTimer = 0f;
+                Debug.Log("Rắn đã đến điểm cuối, bắt đầu đếm thời gian...");
+            }
+            else
+            {
+                // Đang ở điểm cuối, tăng timer
+                endPointTimer += Time.deltaTime;
+                Debug.Log($"Đang đếm thời gian tại điểm cuối: {endPointTimer:F1}/{endPointWaitTime}s");
+                
+                if (endPointTimer >= endPointWaitTime)
+                {
+                    Debug.Log("THUA");
+                    gameEnded = true;
+                    OnLose();
+                }
+            }
+        }
+        else
+        {
+            if (isAtEndPoint)
+            {
+                // Rắn đã rời khỏi điểm cuối, reset timer
+                isAtEndPoint = false;
+                endPointTimer = 0f;
+                Debug.Log("Rắn đã rời khỏi điểm cuối, reset timer");
+            }
+        }
+    }
+
+    // Hàm được gọi khi thắng
+    void OnWin()
+    {
+        StopSnake();
+        // Thêm logic xử lý khi thắng ở đây
+        // Ví dụ: hiển thị UI thắng, chuyển level, etc.
+    }
+
+    // Hàm được gọi khi thua
+    void OnLose()
+    {
+        StopSnake();
+        // Thêm logic xử lý khi thua ở đây
+        // Ví dụ: hiển thị UI thua, restart game, etc.
+    }
+
+    // Hàm reset game state (có thể gọi khi restart)
+    public void ResetGameState()
+    {
+        gameEnded = false;
+        isAtEndPoint = false;
+        endPointTimer = 0f;
+        hasReachedMiddle = false;
+        canCheckWinLose = false;
+        currentPathProgress = 0f;
+    }
+
+    // ============ PUBLIC METHODS ============
+
     public void StopSnake() => isMoving = false;
     public void StartSnake() => isMoving = true;
     public int GetSegmentCount() => segments.Count;
@@ -477,6 +574,8 @@ public class Snake : MonoBehaviour
     public void SetReverse(bool reverse) => isReversing = reverse;
     public void ForceForward() => isReversing = false;
     public void ForceReverse() => isReversing = true;
+    public bool HasReachedMiddle() => hasReachedMiddle;
+    public bool CanCheckWinLose() => canCheckWinLose;
 
     public List<SegmentType> GetSegmentTypes()
     {
@@ -488,5 +587,11 @@ public class Snake : MonoBehaviour
     public int GetDestructibleSegmentCount()
     {
         return segments.Count(s => s != null && !s.IsDestroyed() && s.GetSegmentType().IsDestructible());
+    }
+
+    // New public method to get the snake's progress
+    public float GetCurrentPathProgress()
+    {
+        return currentPathProgress;
     }
 }

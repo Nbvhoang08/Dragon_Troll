@@ -1,9 +1,8 @@
 ﻿using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Linq;
+using UnityEngine.EventSystems;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -44,16 +43,61 @@ public class GameManager : Singleton<GameManager>
     public override void Awake()
     {
         base.Awake();
-        playerData =LoadPlayerData();
+        playerData = LoadPlayerData();
         InGame = false;
+        gameState = GameState.Starting;
     }
-    void Start()
+    private void OnEnable()
     {
-       
-        SetUpLevel();
+        GameEvents.GameStart += OnGameStart;
     }
 
-    public void SetUpLevel() 
+    private void OnDisable()
+    {
+        GameEvents.GameStart -= OnGameStart;
+    }
+
+
+    void Start()
+    {
+        UIManager.Instance.OpenUI<UIHome>();
+        FadeIn(1);
+        SoundManager.Instance.PlayBGMusic();
+    }
+
+    public void FadeIn()
+    {
+        UIManager.Instance.OpenUI<UITransition>();
+        UIManager.Instance.GetUI<UITransition>().PlayRevealIn(() => UIManager.Instance.CloseUIDirectly<UITransition>());
+
+    }
+    public void FadeIn(float time, System.Action callback = null)
+    {
+        UIManager.Instance.OpenUI<UITransition>();
+        UITransition trans = UIManager.Instance.GetUI<UITransition>();
+        trans.SetRadius(0f);
+        DOVirtual.DelayedCall(time, () =>
+        {
+            callback?.Invoke();
+            trans.PlayRevealIn(() => UIManager.Instance.CloseUIDirectly<UITransition>());
+        });
+
+    }
+    public void FadeOut(float time, System.Action callback = null)
+    {
+        UIManager.Instance.OpenUI<UITransition>();
+        UITransition trans = UIManager.Instance.GetUI<UITransition>();
+        trans.SetRadius(0f);
+        DOVirtual.DelayedCall(time, () =>
+        {
+            callback?.Invoke();
+            trans.PlayRevealIn(() => UIManager.Instance.CloseUIDirectly<UITransition>());
+        });
+    }
+
+
+
+    public void SetUpLevel()
     {
         int childCount = _levelContainer.transform.childCount;
         for (int i = 0; i < childCount; i++)
@@ -62,10 +106,25 @@ public class GameManager : Singleton<GameManager>
             Destroy(child.gameObject);
         }
 
-
-
+        InGame = true;
+        GameEvents.GameStart?.Invoke();
         GameObject currentLV = Instantiate(levelDatas.CurrentLevel(currentLevel).LevelPrefab, _levelContainer);
     }
+    public void ClearLevel() 
+    {
+        int childCount = _levelContainer.transform.childCount;
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform child = _levelContainer.transform.GetChild(i);
+            Destroy(child.gameObject);
+        }
+        InGame = false;
+    }
+    public void OnGameStart() 
+    {
+        gameState = GameState.Playing;
+    }
+
 
     public bool ChangeSetting(TypeSetting typeSetting)
     {
@@ -120,27 +179,14 @@ public class GameManager : Singleton<GameManager>
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // 0 = Left click
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) // 0 = Left click
         {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePos.z = 0f; // Đảm bảo z = 0 nếu là game 2D
+            mousePos.z = 0f;
 
             Effect clickEffect = Pool.Instance.clickedEffect;
             clickEffect.transform.position = mousePos;
         }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            RemoveCanon();
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-           SlipBus();
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Boost();
-        }
-
     }
     public void Boost() 
     {
@@ -151,6 +197,8 @@ public class GameManager : Singleton<GameManager>
         gameState = GameState.Slip;
         DarkBG.SetActive(true);
         SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+        DarkBG.transform.position = new Vector3(0, 0, 1);
+        sr.sortingOrder = 30; // Đặt z để nó nằm dưới các đối tượng khác
         if (sr == null) return;
         // Fade alpha từ 0 -> 1
         sr.material.DOFade(1f, 1f)
@@ -158,9 +206,11 @@ public class GameManager : Singleton<GameManager>
     }
     public void SlipDone()
     {
-          gameState = GameState.Playing;
+        gameState = GameState.Playing;
         // Fade alpha từ 1 -> 0
         SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+
+
         if (sr == null) return;
         // Fade alpha từ 1 -> 0
         sr.material.DOFade(0f, 1f)
@@ -175,8 +225,9 @@ public class GameManager : Singleton<GameManager>
     {
         gameState = GameState.RemoveCanon;
         DarkBG.SetActive(true);
-        DarkBG.GetComponent<SpriteRenderer>().sortingOrder = 55;
+        DarkBG.transform.position = new Vector3(0,0,-2); 
         SpriteRenderer sr = DarkBG.GetComponent<SpriteRenderer>();
+        sr.sortingOrder = 55; // Đặt z để nó nằm dưới các đối tượng khác
         if (sr == null) return;
         // Fade alpha từ 0 -> 1
         sr.material.DOFade(1f, 0.5f)
@@ -195,9 +246,26 @@ public class GameManager : Singleton<GameManager>
           {
               DarkBG.SetActive(false); // Tắt object sau khi fade
           });
+        GameEvents.RemoveCanon?.Invoke(false);
     }
 
+    public bool IsPointerOverUIObject()
+    {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
 
+        for (int i = 0; i < results.Count; i++)
+        {
+            if (results[i].gameObject.layer == 5)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     //Player Data
     private  string FolderPath => Path.Combine(Application.persistentDataPath, "SaveData");

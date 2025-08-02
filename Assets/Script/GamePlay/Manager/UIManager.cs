@@ -54,6 +54,8 @@ public class UIManager : Singleton<UIManager>
         }
     }
 
+    
+
     public void CloseUIDirectly<T>() where T : UICanvas
     {
         T canvas = GetUI<T>();

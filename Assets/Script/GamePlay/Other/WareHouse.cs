@@ -91,6 +91,27 @@ public class WareHouse : MonoBehaviour
             }
         }
     }
+    private void OnDrawGizmos()
+    {
+        // Màu raycast
+        Gizmos.color = Color.red;
+
+        // Lấy hướng ray giống lúc check
+        Vector2 dir = GetDirectionFromBusDirection(busDirection);
+        Vector2 origin = transform.position;
+        float distance = 2f;
+
+        // Vẽ ray trong Scene
+        Gizmos.DrawLine(origin, origin + dir * distance);
+
+        // Vẽ quả cầu nhỏ ở đầu ray để dễ nhìn
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(origin + dir * distance, 0.1f);
+
+        // Vẽ vị trí Warehouse
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(origin, 0.1f);
+    }
 
 
     private void MoveBusOut(Bus bus, Vector2 direction)

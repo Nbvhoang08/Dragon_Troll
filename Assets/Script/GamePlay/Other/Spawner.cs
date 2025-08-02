@@ -11,7 +11,18 @@ public class Spawner : MonoBehaviour
 
     private List<BusColor> finalScales = new List<BusColor>();
 
-    void Start()
+    private void OnEnable()
+    {
+        GameEvents.GameStart += OnGameStart;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.GameStart -= OnGameStart;
+    }
+
+
+    void OnGameStart()
     {
         // Nếu ammoList rỗng thì load từ JSON database theo LevelIndex
         if (ammoList == null || ammoList.Count == 0)
@@ -25,6 +36,10 @@ public class Spawner : MonoBehaviour
     /// <summary>
     /// Load ammo data từ AmmoDatabase.json theo LevelIndex
     /// </summary>
+    
+
+
+
     public void LoadAmmoByLevelIndex(int levelIndex)
     {
         string path = Path.Combine(Application.dataPath, "Export Level", "AmmoDatabase.json");

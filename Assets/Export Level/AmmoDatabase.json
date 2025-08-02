@@ -53,6 +53,31 @@
                     "count": 6
                 }
             ]
+        },
+        {
+            "levelIndex": 3,
+            "ammoEntries": [
+                {
+                    "color": 4,
+                    "count": 20
+                },
+                {
+                    "color": 1,
+                    "count": 10
+                },
+                {
+                    "color": 2,
+                    "count": 14
+                },
+                {
+                    "color": 0,
+                    "count": 28
+                },
+                {
+                    "color": 7,
+                    "count": 6
+                }
+            ]
         }
     ]
 }

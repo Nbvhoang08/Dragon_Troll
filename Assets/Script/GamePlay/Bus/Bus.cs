@@ -29,14 +29,12 @@ public class Bus : GenericPoolableObject
     public bool IsOnConveyor { get; set; } = false; // Biến để xác định xem bus có đang trên băng chuyền 
     void Start()
     {
-        //_collider = GetComponent<Collider2D>();
-        
         startPosition = transform.position;
-        //_busVisual = GetComponent<BusVisual>();
     }
 
     private void OnMouseDown()
     {
+        if (GameManager.Instance.IsPointerOverUIObject()) return;
         if (isMoving) return;
         if (Clocked) return;
         targetSlot = GameManager.Instance.ValidSlot();
@@ -84,7 +82,8 @@ public class Bus : GenericPoolableObject
         Vector3 target3D = new Vector3(target.x, target.y, transform.position.z);
         float distance = Vector3.Distance(transform.position, target3D);
         float duration = distance / moveSpeed;
-        GameEvents.ConveyorRun?.Invoke(true); // Thông báo bắt đầu di chuyển
+        if(IsOnConveyor)
+            GameEvents.ConveyorRun?.Invoke(true); // Thông báo bắt đầu di chuyển
         transform.DOMove(target3D, duration)
             .SetEase(Ease.Linear)
             .OnComplete(
@@ -238,7 +237,10 @@ public class Bus : GenericPoolableObject
                 targetSlot.OnOccupied(_busVisual.busColor, _busVisual.busType);
                 transform.position = startPosition; // Trả về vị trí ban đầu
             });
-            GameEvents.ConveyorRun?.Invoke(false);
+            if (IsOnConveyor)
+            {
+                GameEvents.ConveyorRun?.Invoke(false);
+            }
             if(IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this); 
             if (wareHouse != null) 
             {
@@ -296,7 +298,11 @@ public class Bus : GenericPoolableObject
                     .OnComplete(() =>
                     {
                         isMoving = false;
-                        GameEvents.ConveyorRun?.Invoke(false); // Thông báo bắt đầu di chuyển
+                        if (IsOnConveyor)
+                        {
+                            GameEvents.ConveyorRun?.Invoke(false);
+                        }
+
                     });
             }
         }

@@ -11,7 +11,6 @@ public static class SenceMenu
     {
         OpenScene("Assets/Scenes/TestDragon.unity");
     }
-
     [MenuItem("OpenScene/TestCar %&1")]
     private static void OpenLevelEditor()
     {
@@ -22,11 +21,12 @@ public static class SenceMenu
     {
         OpenScene("Assets/Scenes/Main.unity");
     }
-    //[MenuItem("OpenScene/MeshEditor %&2")]
-    //private static void OpenMeshEditor()
-    //{
-    //    OpenScene("Assets/_GameAssets/Scenes/MeshEditor.unity");
-    //}
+
+    [MenuItem("OpenScene/MainCat %&3")]
+    private static void OpenMeshEditor()
+    {
+        OpenScene("Assets/_GameAssets/Scenes/MainCat.unity");
+    }
 
     private static void OpenScene(string scenePath)
     {

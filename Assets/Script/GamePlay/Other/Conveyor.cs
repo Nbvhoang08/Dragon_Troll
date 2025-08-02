@@ -50,6 +50,7 @@ public class Conveyor : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.Instance.gameState != GameState.Playing) return;
         if (_isPaused || AllBusesReady()) return;
 
         foreach (var bus in busList)
