@@ -10,6 +10,7 @@ public class Spawner : MonoBehaviour
     public int CurrentLevelIndex = 1; // Level cần load từ JSON
 
     private List<BusColor> finalScales = new List<BusColor>();
+    private bool hasLoadedThisLevel = false; // FIX: Flag để tránh load trùng
 
     private void OnEnable()
     {
@@ -21,56 +22,122 @@ public class Spawner : MonoBehaviour
         GameEvents.GameStart -= OnGameStart;
     }
 
+    // FIX: Reset khi level mới được load
+    private void Start()
+    {
+        ResetSpawner();
+    }
+
+    // FIX: Public method để reset spawner từ bên ngoài
+    public void ResetSpawner()
+    {
+        Debug.Log("Resetting Spawner...");
+        hasLoadedThisLevel = false;
+        ammoList?.Clear();
+        finalScales?.Clear();
+        CurrentLevelIndex = GameManager.Instance.currentLevel;
+    }
 
     void OnGameStart()
     {
-        // Nếu ammoList rỗng thì load từ JSON database theo LevelIndex
-        if (ammoList == null || ammoList.Count == 0)
+        Debug.Log($"Spawner OnGameStart - CurrentLevel: {GameManager.Instance.currentLevel}");
+        
+        // FIX: Luôn load lại ammo cho level mới
+        CurrentLevelIndex = GameManager.Instance.currentLevel;
+        
+        // FIX: Clear data cũ trước khi load mới
+        if (ammoList != null)
         {
-            LoadAmmoByLevelIndex(GameManager.Instance.currentLevel);
+            ammoList.Clear();
         }
+        finalScales?.Clear();
+        hasLoadedThisLevel = false;
 
+        // Load ammo data cho level hiện tại
+        LoadAmmoByLevelIndex(CurrentLevelIndex);
+        
+        // Generate sequence
         GenerateScaleSequence();
+        
+        hasLoadedThisLevel = true;
+        
+        Debug.Log($"✅ Spawner loaded Level {CurrentLevelIndex} với {GetTotalAmmoCount()} đạn");
     }
 
     /// <summary>
     /// Load ammo data từ AmmoDatabase.json theo LevelIndex
     /// </summary>
-    
-
-
-
     public void LoadAmmoByLevelIndex(int levelIndex)
     {
+        Debug.Log($"Loading ammo for Level {levelIndex}...");
+        
         string path = Path.Combine(Application.dataPath, "Export Level", "AmmoDatabase.json");
 
         if (!File.Exists(path))
         {
             Debug.LogError($"Không tìm thấy file JSON Database: {path}");
+            LoadDefaultAmmo(); // FIX: Load default nếu không tìm thấy file
             return;
         }
 
-        string json = File.ReadAllText(path);
-
-        AmmoDatabase database = JsonUtility.FromJson<AmmoDatabase>(json);
-
-        if (database == null || database.levels == null || database.levels.Count == 0)
+        try
         {
-            Debug.LogError("AmmoDatabase rỗng hoặc không hợp lệ!");
-            return;
+            string json = File.ReadAllText(path);
+            AmmoDatabase database = JsonUtility.FromJson<AmmoDatabase>(json);
+
+            if (database == null || database.levels == null || database.levels.Count == 0)
+            {
+                Debug.LogError("AmmoDatabase rỗng hoặc không hợp lệ!");
+                LoadDefaultAmmo();
+                return;
+            }
+
+            // Tìm Level trùng index
+            AmmoSummaryWrapper levelData = database.levels.Find(l => l.levelIndex == levelIndex);
+
+            if (levelData == null)
+            {
+                Debug.LogWarning($"Không tìm thấy dữ liệu cho Level {levelIndex}, sử dụng Level 1");
+                levelData = database.levels.Find(l => l.levelIndex == 1);
+                
+                if (levelData == null)
+                {
+                    Debug.LogError("Không tìm thấy Level 1, load default ammo");
+                    LoadDefaultAmmo();
+                    return;
+                }
+            }
+
+            // FIX: Tạo mới ammoList thay vì assign reference
+            ammoList = new List<AmmoEntry>();
+            foreach (var entry in levelData.ammoEntries)
+            {
+                ammoList.Add(new AmmoEntry 
+                { 
+                    color = entry.color, 
+                    count = entry.count 
+                });
+            }
+            
+            Debug.Log($"✅ Loaded Level {levelIndex} với {ammoList.Sum(a => a.count)} đạn: {string.Join(", ", ammoList.Select(a => $"{a.color}:{a.count}"))}");
         }
-
-        // Tìm Level trùng index
-        AmmoSummaryWrapper levelData = database.levels.Find(l => l.levelIndex == levelIndex);
-
-        if (levelData == null)
+        catch (System.Exception e)
         {
-            Debug.LogError($"Không tìm thấy dữ liệu cho Level {levelIndex} trong AmmoDatabase!");
-            return;
+            Debug.LogError($"Lỗi khi load AmmoDatabase: {e.Message}");
+            LoadDefaultAmmo();
         }
+    }
 
-        ammoList = new List<AmmoEntry>(levelData.ammoEntries);
-        Debug.Log($"✅ Loaded Level {levelIndex} với {ammoList.Sum(a => a.count)} đạn.");
+    // FIX: Load ammo mặc định khi có lỗi
+    private void LoadDefaultAmmo()
+    {
+        Debug.Log("Loading default ammo...");
+        ammoList = new List<AmmoEntry>
+        {
+            new AmmoEntry { color = BusColor.Red, count = 3 },
+            new AmmoEntry { color = BusColor.Blue, count = 3 },
+            new AmmoEntry { color = BusColor.Green, count = 3 }
+        };
     }
 
     // ======================================
@@ -79,6 +146,12 @@ public class Spawner : MonoBehaviour
 
     void GenerateScaleSequence()
     {
+        if (ammoList == null || ammoList.Count == 0)
+        {
+            Debug.LogError("AmmoList rỗng, không thể generate sequence!");
+            return;
+        }
+
         List<List<BusColor>> allChunks = new List<List<BusColor>>();
 
         foreach (var ammo in ammoList)
@@ -97,6 +170,8 @@ public class Spawner : MonoBehaviour
         Shuffle(allChunks);
 
         finalScales = allChunks.SelectMany(chunk => chunk).ToList();
+        
+        Debug.Log($"Generated sequence với {finalScales.Count} segments: {string.Join(", ", finalScales)}");
     }
 
     void Shuffle<T>(List<T> list)
@@ -125,10 +200,6 @@ public class Spawner : MonoBehaviour
     public bool HasValidAmmo() => ammoList != null && ammoList.Count > 0 && GetTotalAmmoCount() > 0;
 }
 
-
-
-
-
 [System.Serializable]
 public class AmmoSummaryWrapper
 {
@@ -142,6 +213,7 @@ public class AmmoEntry
     public BusColor color;
     public int count;
 }
+
 [System.Serializable]
 public class AmmoDatabase
 {

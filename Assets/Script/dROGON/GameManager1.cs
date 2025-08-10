@@ -21,14 +21,9 @@ public class GameManager1 : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            RestartGame();
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            TogglePause();
-        }
+        
+        
+        
     }
 
     void InitializeGame()
@@ -47,59 +42,6 @@ public class GameManager1 : MonoBehaviour
         Debug.Log("====================");
     }
 
-    public void OnSegmentDestroyed()
-    {
-        if (gameEnded) return;
-
-        // Kiểm tra chiến thắng bằng cách đếm số đốt có thể phá hủy
-        if (snakeController != null && snakeController.GetDestructibleSegmentCount() == 0)
-        {
-            OnVictory();
-        }
-    }
-
-   
-    void OnVictory()
-    {
-        if (gameEnded) return;
-        gameEnded = true;
-        Debug.Log("THẮNG! Đã phá hủy hoàn toàn các đốt của rắn!");
-
-        if (snakeController != null)
-        {
-            snakeController.StopSnake();
-        }
-        Debug.Log("Ấn R để chơi lại!");
-    }
-
-    void RestartGame()
-    {
-        Debug.Log("Restarting game...");
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
-    }
-
-    void TogglePause()
-    {
-        if (snakeController == null || gameEnded) return;
-
-        if (Time.timeScale > 0)
-        {
-            Time.timeScale = 0;
-            Debug.Log("Game đã tạm dừng. Ấn P để tiếp tục.");
-        }
-        else
-        {
-            Time.timeScale = 1;
-            Debug.Log("Game tiếp tục.");
-        }
-    }
-
-    public void NotifySegmentDestroyed()
-    {
-        OnSegmentDestroyed();
-    }
 
     public void ForceSnakeForward()
     {

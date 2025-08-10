@@ -10,7 +10,10 @@ public class Slot : MonoBehaviour
     [SerializeField] private float raycastDistance = 5f;
     public Image bulletImage;
     [HideInInspector]public TextMeshProUGUI bulletNumberText;
-    public int bulletNumber = 0;
+    
+    // THAY ĐỔI: Lưu số đạn hiện tại thay vì ban đầu
+    [HideInInspector] public int bulletNumber = 0; // Số đạn hiện tại (sẽ được cập nhật khi canon bắn)
+    
     public Canon canon;
     [SerializeField] private SpriteRenderer BackGround;
     public ParticleSystem[] particleSystems;
@@ -19,13 +22,16 @@ public class Slot : MonoBehaviour
     {
         GameEvents.RemoveCanon += SetLayer;
         GameEvents.BoostFire += BoostFireHeight;
+        GameEvents.GameStart += ResetSlot;
     }
 
     private void OnDisable()
     {
         GameEvents.RemoveCanon -= SetLayer;
         GameEvents.BoostFire -= BoostFireHeight;
+        GameEvents.GameStart -= ResetSlot;
     }
+    
     private void Start()
     {
         canon = GetComponentInChildren<Canon>();
@@ -54,29 +60,78 @@ public class Slot : MonoBehaviour
         }
     }
 
-    public void OnMouseDown()
+    public void ResetSlot()
     {
-        if (GameManager.Instance.gameState != GameState.RemoveCanon) return;
-        particleSystems[0].Play();
-        canon.DoneAnimation();
-        GameManager.Instance.RemoveCanonDone();
+        Debug.Log($"Resetting slot: {gameObject.name}");
+        
+        isOccupied = false;
+        
+        if (canon != null)
+        {
+            canon.ResetCanon();
+            canon.gameObject.SetActive(false);
+        }
+        
+        bulletNumber = 0;
+        if (bulletNumberText != null)
+        {
+            bulletNumberText.text = "";
+            bulletNumberText.gameObject.SetActive(false);
+        }
+        
+        if (bulletImage != null)
+        {
+            bulletImage.sprite = null;
+            bulletImage.gameObject.SetActive(false);
+        }
+        
+        foreach (var ps in particleSystems)
+        {
+            if (ps != null && ps.isPlaying)
+            {
+                ps.Stop();
+                ps.Clear();
+            }
+        }
+        
+        if (BackGround != null)
+        {
+            BackGround.sortingOrder = 0;
+        }
     }
 
+    public void OnMouseDown()
+    {
+        // CHỈ phản hồi khi đang ở chế độ RemoveCanon và slot này có canon
+        if (GameManager.Instance.gameState != GameState.RemoveCanon) return;
+        if (!isOccupied || canon == null || !canon.gameObject.activeInHierarchy) return;
+        
+        Debug.Log($"Người chơi chọn xóa canon tại slot: {gameObject.name}");
+        
+        // Phát hiệu ứng
+        particleSystems[0].Play();
+        
+        // Thông báo cho GameManager canon nào được chọn
+        GameManager.Instance.OnCanonSelectedForRemoval(canon);
+        
+        // Kết thúc chế độ xóa canon
+        GameManager.Instance.RemoveCanonDone();
+    }
 
     public void BoostFireHeight()
     {
         if (canon != null)
         {
             particleSystems[2].Play();
-            canon.fireHeight =10;
+            canon.fireHeight = 10;
         }
     }
 
     public void SetOccupied(bool occupied)
     {
         isOccupied = occupied;
-        
     }
+    
     private Vector2 GetIntersectionWithCenterLine(Vector2 rayOrigin, Vector2 rayDir, Bounds bounds)
     {
         Vector2 center = bounds.center;
@@ -101,6 +156,7 @@ public class Slot : MonoBehaviour
         Debug.LogWarning("Không tìm được giao điểm với center line!");
         return rayOrigin;
     }
+    
     private Vector2? LineIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
     {
         float A1 = p2.y - p1.y;
@@ -121,27 +177,48 @@ public class Slot : MonoBehaviour
 
         return new Vector2(x, y);
     }
-    public void OnOccupied(BusColor busColor , BusType busType) 
+    
+    public void OnOccupied(BusColor busColor, BusType busType) 
     {
         SoundManager.Instance.Play(Constants.Occupied);
         canon.gameObject.SetActive(true);
         CanonVisualData data = canon.canonData.GetVisualData(busColor);
         canon.CanonSpriteConfig(data);
         bulletImage.sprite = data.AmmoImage;
+        bulletImage.gameObject.SetActive(true);
         canon.bulletSprite = data.bulletSprite;
         bulletNumberText.gameObject.SetActive(true);
+        
+        // THAY ĐỔI: Lưu số đạn ban đầu và cập nhật hiển thị
         bulletNumber = Constants.BulletAmount[(int)busType];
         canon.StartFiringLoop(bulletNumber);
+        
         if (bulletNumberText != null)
         {
-            bulletNumberText.text = Constants.BulletAmount[(int)busType].ToString();
+            bulletNumberText.text = bulletNumber.ToString();
         }
-        
+    }
+
+    // THÊM MỚI: Hàm cập nhật số đạn (được gọi từ Canon khi bắn)
+    public void UpdateBulletCount(int newCount)
+    {
+        bulletNumber = newCount;
+        if (bulletNumberText != null)
+        {
+            bulletNumberText.text = bulletNumber.ToString();
+        }
+    }
+
+    // THÊM MỚI: Getter để lấy số đạn hiện tại
+    public int GetCurrentBulletCount()
+    {
+        return bulletNumber;
     }
 
     public void SetLayer(bool higher) 
     {
-        BackGround.sortingOrder = higher? 59 :0;
+        BackGround.sortingOrder = higher ? 59 : 0;
     }
-
 }
+
+

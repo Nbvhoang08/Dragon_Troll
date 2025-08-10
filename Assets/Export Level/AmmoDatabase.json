@@ -1,27 +1,6 @@
 {
     "levels": [
         {
-            "levelIndex": 1,
-            "ammoEntries": [
-                {
-                    "color": 4,
-                    "count": 6
-                },
-                {
-                    "color": 1,
-                    "count": 6
-                },
-                {
-                    "color": 0,
-                    "count": 6
-                },
-                {
-                    "color": 3,
-                    "count": 6
-                }
-            ]
-        },
-        {
             "levelIndex": 2,
             "ammoEntries": [
                 {
@@ -58,23 +37,118 @@
             "levelIndex": 3,
             "ammoEntries": [
                 {
-                    "color": 4,
-                    "count": 20
-                },
-                {
                     "color": 1,
-                    "count": 10
+                    "count": 42
                 },
                 {
                     "color": 2,
-                    "count": 14
-                },
-                {
-                    "color": 0,
-                    "count": 28
+                    "count": 24
                 },
                 {
                     "color": 7,
+                    "count": 46
+                },
+                {
+                    "color": 3,
+                    "count": 20
+                },
+                {
+                    "color": 6,
+                    "count": 4
+                },
+                {
+                    "color": 0,
+                    "count": 44
+                },
+                {
+                    "color": 4,
+                    "count": 20
+                }
+            ]
+        },
+        {
+            "levelIndex": 4,
+            "ammoEntries": [
+                {
+                    "color": 1,
+                    "count": 42
+                },
+                {
+                    "color": 2,
+                    "count": 30
+                },
+                {
+                    "color": 7,
+                    "count": 52
+                },
+                {
+                    "color": 3,
+                    "count": 20
+                },
+                {
+                    "color": 0,
+                    "count": 46
+                },
+                {
+                    "color": 6,
+                    "count": 4
+                },
+                {
+                    "color": 4,
+                    "count": 34
+                }
+            ]
+        },
+        {
+            "levelIndex": 5,
+            "ammoEntries": [
+                {
+                    "color": 1,
+                    "count": 42
+                },
+                {
+                    "color": 2,
+                    "count": 40
+                },
+                {
+                    "color": 7,
+                    "count": 58
+                },
+                {
+                    "color": 3,
+                    "count": 20
+                },
+                {
+                    "color": 0,
+                    "count": 56
+                },
+                {
+                    "color": 6,
+                    "count": 4
+                },
+                {
+                    "color": 4,
+                    "count": 38
+                }
+            ]
+        },
+        {
+            "levelIndex": 1,
+            "ammoEntries": [
+                {
+                    "color": 4,
+                    "count": 6
+                },
+                {
+                    "color": 3,
+                    "count": 6
+                },
+                {
+                    "color": 1,
+                    "count": 6
+                },
+                {
+                    "color": 0,
                     "count": 6
                 }
             ]

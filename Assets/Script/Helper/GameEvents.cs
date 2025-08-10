@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class GameEvents
 {
-    public static Action GameStart; 
+    public static Action GameStart;
 
     public static Action GameOver;
     public static Action RestartGameAction;
@@ -13,6 +13,9 @@ public static class GameEvents
     public static Action<Bus> ConveyorBusListUpdate;
     public static Action<bool> RemoveCanon;
     public static Action BoostFire;
+    public static Action CompleteGameReset;
+     public static Action<int> LevelChanged;
+     
 }
 
 

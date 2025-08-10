@@ -47,7 +47,7 @@ public class Cat : MonoBehaviour
     private float currentPathProgress;
     private bool isRunning = false;
     private bool hasReachedEnd = false;
-    private bool isCrying = false; // NEW: Trạng thái cry
+    private bool isCrying = false;
     private string currentName = "";
 
     // Joke animation timing
@@ -57,11 +57,101 @@ public class Cat : MonoBehaviour
     private float currentRotationZ = 0f;
     private bool isFlippedY = false;
 
+    // NEW: Để theo dõi việc tự động tìm references
+    private bool hasFoundReferences = false;
+
     void Start()
     {
-        InitializeCat();
-
+        // NEW: Subscribe to game events
+        GameEvents.GameStart += OnGameStart;
+        
+        // Try to find references immediately
+        FindAndSetupReferences();
+        
         // Set initial idle animation
+        if (anim != null)
+        {
+            ChangeAnim(idleAnimName);
+        }
+    }
+
+    void OnDestroy()
+    {
+        // NEW: Unsubscribe from events to prevent memory leaks
+        GameEvents.GameStart -= OnGameStart;
+    }
+
+    // NEW: Handle game start event
+    void OnGameStart()
+    {
+        Debug.Log("Cat received GameStart event, finding new references...");
+        
+        // Reset state when new game starts
+        ResetCatState();
+        
+        // Find new references after level setup
+        DOVirtual.DelayedCall(0.1f, () => {
+            FindAndSetupReferences();
+        });
+    }
+
+    // NEW: Automatically find SnakePathCreator and Snake references
+    void FindAndSetupReferences()
+    {
+        // Find SnakePathCreator in scene
+        if (pathCreator == null)
+        {
+            pathCreator = FindObjectOfType<SnakePathCreator>();
+            if (pathCreator != null)
+            {
+                Debug.Log("Cat: Đã tự động tìm thấy SnakePathCreator");
+            }
+        }
+
+        // Find Snake in scene
+        if (targetSnake == null)
+        {
+            targetSnake = FindObjectOfType<Snake>();
+            if (targetSnake != null)
+            {
+                Debug.Log("Cat: Đã tự động tìm thấy Snake");
+            }
+        }
+
+        // Initialize if we have pathCreator
+        if (pathCreator != null)
+        {
+            // Wait a bit more to ensure SnakePathCreator is fully initialized
+            DOVirtual.DelayedCall(0.2f, () => {
+                InitializeCat();
+                hasFoundReferences = true;
+            });
+        }
+        else
+        {
+            Debug.LogWarning("Cat: Không tìm thấy SnakePathCreator trong scene!");
+            // Try again after a short delay
+            DOVirtual.DelayedCall(1f, () => {
+                if (!hasFoundReferences)
+                {
+                    FindAndSetupReferences();
+                }
+            });
+        }
+    }
+
+    // NEW: Reset cat state
+    void ResetCatState()
+    {
+        isRunning = false;
+        hasReachedEnd = false;
+        isCrying = false;
+        hasFoundReferences = false;
+        lastJokeTime = 0f;
+        
+        // Reset to initial position
+        currentPathProgress = Mathf.Clamp01(initialPathPosition);
+        
         if (anim != null)
         {
             ChangeAnim(idleAnimName);
@@ -70,6 +160,12 @@ public class Cat : MonoBehaviour
 
     void Update()
     {
+        // NEW: If we don't have references yet, try to find them
+        if (!hasFoundReferences && (pathCreator == null || targetSnake == null))
+        {
+            return; // Wait until we have proper references
+        }
+
         // NEW: Kiểm tra xem rắn đã đến đích chưa
         CheckSnakeReachedEnd();
 
@@ -126,9 +222,8 @@ public class Cat : MonoBehaviour
     {
         if (pathCreator == null)
         {
-            Debug.LogError("Cat: Cần gán SnakePathCreator trong Inspector!", this);
-            enabled = false;
-            return;
+            Debug.LogError("Cat: Cần có SnakePathCreator để hoạt động!", this);
+            return; // Don't disable, just return and try again later
         }
 
         // Get animator if not assigned
@@ -137,7 +232,12 @@ public class Cat : MonoBehaviour
             anim = GetComponent<Animator>();
         }
 
-        pathCreator.InitializePath();
+        // Ensure path is initialized
+        if (!pathCreator.IsInitialized())
+        {
+            pathCreator.InitializePath();
+        }
+
         pathPositions = pathCreator.GetPathPositions();
         pathRotations = pathCreator.GetPathRotations();
         pathLength = pathCreator.GetPathLength();
@@ -145,7 +245,6 @@ public class Cat : MonoBehaviour
         if (pathPositions == null || pathPositions.Length < 2)
         {
             Debug.LogError("Cat: Path không hợp lệ!", this);
-            enabled = false;
             return;
         }
 
@@ -156,6 +255,8 @@ public class Cat : MonoBehaviour
         transform.position = SetZToZero(startPosition);
         currentRotationZ = startRotation.z;
         transform.rotation = Quaternion.Euler(0, 0, currentRotationZ);
+
+        Debug.Log("Cat initialized successfully!");
     }
 
     // New logic to check for the trigger condition
@@ -421,15 +522,13 @@ public class Cat : MonoBehaviour
     /// </summary>
     public void ResetToIdle()
     {
-        ChangeAnim(idleAnimName);
-        isRunning = false;
-        hasReachedEnd = false;
-        isCrying = false; // NEW: Reset cry state
-        lastJokeTime = 0f;
-        currentPathProgress = Mathf.Clamp01(initialPathPosition);
+        ResetCatState();
 
-        Vector3 startPosition = GetPositionOnPath(currentPathProgress);
-        transform.position = SetZToZero(startPosition);
+        if (pathPositions != null && pathPositions.Length > 0)
+        {
+            Vector3 startPosition = GetPositionOnPath(currentPathProgress);
+            transform.position = SetZToZero(startPosition);
+        }
     }
 
     /// <summary>
@@ -488,6 +587,25 @@ public class Cat : MonoBehaviour
         {
             ChangeAnim(idleAnimName);
         }
+    }
+
+    /// <summary>
+    /// NEW: Force find references manually (useful for debugging)
+    /// </summary>
+    public void ForceRefreshReferences()
+    {
+        hasFoundReferences = false;
+        pathCreator = null;
+        targetSnake = null;
+        FindAndSetupReferences();
+    }
+
+    /// <summary>
+    /// NEW: Check if cat has valid references
+    /// </summary>
+    public bool HasValidReferences()
+    {
+        return hasFoundReferences && pathCreator != null && targetSnake != null;
     }
     #endregion
 }

@@ -9,13 +9,17 @@ public class BtnSetting : MonoBehaviour
     [SerializeField] TypeSetting typeSetting;
     [SerializeField] float maxX = 46.8f;
     [SerializeField] float minX = 46.8f;
-    [SerializeField] Image BG ;
+    [SerializeField] Image BG;
     [SerializeField] Sprite spriteOn;
     [SerializeField] Sprite spriteOff;
     Button button;
     public void Start()
     {
-        
+        Init();
+    }
+
+    public void Init()
+    {
         button = GetComponent<Button>();
         if (button == null)
         {

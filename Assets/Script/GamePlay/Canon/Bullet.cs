@@ -8,12 +8,12 @@ public class Bullet : GenericPoolableObject, IPoolable
     public float speed =1f;
     private SnakeSegment _target;
     public BusColor color;
+    
     public void SetTarget(SnakeSegment target,BusColor canonColor)
     {
         _target = target;
         color = canonColor;
     }
-
 
     void Update()
     {
@@ -41,7 +41,5 @@ public class Bullet : GenericPoolableObject, IPoolable
         _target.GetComponent<SnakeSegment>().OnHit();
         _target = null; // Clear target after hit
         ReturnToPool();
-
     }
-
 }

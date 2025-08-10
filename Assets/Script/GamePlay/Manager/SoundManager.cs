@@ -14,7 +14,7 @@ public class SoundManager : Singleton<SoundManager>
         base.Awake();
         InitialSound();
     }
-    
+
     private void InitialSound()
     {
         foreach (Sound s in sounds)
@@ -40,22 +40,30 @@ public class SoundManager : Singleton<SoundManager>
 
     public void PlayBGMusic()
     {
-        if (!GameManager.Instance.MusicOn)
-            return;
-        StartCoroutine(PlayBgMusic());
-    }
+        if (!GameManager.Instance.MusicOn) return;
 
-    private IEnumerator PlayBgMusic()
-    {
-        backgroundSounds[currentBGMusic].source.Play();
-        yield return null;
+        if (backgroundSounds != null && backgroundSounds.Length > 0 &&
+            backgroundSounds[currentBGMusic].source != null)
+        {
+            backgroundSounds[currentBGMusic].source.volume = backgroundSounds[currentBGMusic].volume;
+            if (!backgroundSounds[currentBGMusic].source.isPlaying)
+            {
+                backgroundSounds[currentBGMusic].source.Play();
+                Debug.Log("Background music started playing");
+            }
+        }
     }
 
     public void Play(string name)
     {
+        if (!GameManager.Instance.SoundOn) return;
+
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s == null)
+        {
+            Debug.LogWarning($"Sound {name} not found!");
             return;
+        }
         s.source.Play();
     }
     public void PlayInUpdate(string name)
@@ -90,10 +98,27 @@ public class SoundManager : Singleton<SoundManager>
 
     public void MuteMusic()
     {
+        if (backgroundSounds == null) return;
+
         foreach (Sound s in backgroundSounds)
         {
-            if (s.source.isPlaying)
+            if (s.source != null)
+            {
                 s.source.Stop();
+            }
+        }
+    }
+
+    public void SetSoundVolume(float volume)
+    {
+        if (sounds == null) return;
+
+        foreach (Sound s in sounds)
+        {
+            if (s.source != null)
+            {
+                s.source.volume = volume * s.volume;
+            }
         }
     }
 }

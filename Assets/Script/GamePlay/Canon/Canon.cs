@@ -3,8 +3,6 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-
-
 public class Canon : MonoBehaviour
 {
     public SpriteRenderer bottom; 
@@ -23,28 +21,113 @@ public class Canon : MonoBehaviour
     public float fireCooldown = 0.25f;
 
     [Header("Muzzle Settings")]
-    public SpriteRenderer muzzleRenderer; // Hoặc bạn có thể dùng GameObject nếu dùng Particle/VFX
+    public SpriteRenderer muzzleRenderer;
     public float flashScale = 1.5f;
     public float flashDuration = 0.15f;
 
-    private BusColor _busColor;
+    [Header("Selection Visual")]
+    public SpriteRenderer selectionHighlight; // Assign trong Inspector
+    private bool isHighlighted = false;
+
+    // THAY ĐỔI: Từ private thành public để GameManager có thể truy cập
+    public BusColor _busColor { get; private set; }
 
     private void OnEnable()
     {
         GameEvents.RemoveCanon += SetLayer;
+        GameEvents.RemoveCanon += OnRemoveCanonMode; // THÊM MỚI
     }
 
     private void OnDisable()
     {
         GameEvents.RemoveCanon -= SetLayer;
+        GameEvents.RemoveCanon -= OnRemoveCanonMode; // THÊM MỚI
     }
-
 
     private void Awake()
     {
         _slot = GetComponentInParent<Slot>();
         muzzleRenderer.enabled = false;
     }
+
+    // THÊM MỚI: Getter để lấy số đạn hiện tại
+    public int GetCurrentAmmo()
+    {
+        return _currAmmo;
+    }
+
+    // THÊM MỚI: Getter để lấy màu của canon
+    public BusColor GetCanonColor()
+    {
+        return _busColor;
+    }
+
+    // THÊM MỚI: Hiển thị highlight khi vào chế độ xóa canon
+    private void OnRemoveCanonMode(bool isRemoveMode)
+    {
+        if (selectionHighlight != null)
+        {
+            selectionHighlight.gameObject.SetActive(isRemoveMode);
+            if (isRemoveMode)
+            {
+                // Tạo hiệu ứng nhấp nháy để thu hút sự chú ý
+                selectionHighlight.DOFade(0.3f, 0.5f)
+                    .SetLoops(-1, LoopType.Yoyo)
+                    .SetEase(Ease.InOutSine);
+            }
+            else
+            {
+                DOTween.Kill(selectionHighlight);
+                selectionHighlight.color = new Color(1, 1, 1, 1);
+            }
+        }
+    }
+
+    public void ResetCanon()
+    {
+        Debug.Log($"Resetting canon: {gameObject.name}");
+        
+        if (firingRoutine != null)
+        {
+            StopCoroutine(firingRoutine);
+            firingRoutine = null;
+        }
+        
+        isFiring = false;
+        _currAmmo = 0;
+        
+        fireHeight = 5f;
+        canonSprite.transform.rotation = Quaternion.identity;
+        canonSprite.transform.localScale = Vector3.one * 0.75f;
+        
+        if (muzzleRenderer != null)
+        {
+            muzzleRenderer.enabled = false;
+            muzzleRenderer.transform.localScale = Vector3.one;
+        }
+        
+        // THÊM: Reset selection highlight
+        if (selectionHighlight != null)
+        {
+            DOTween.Kill(selectionHighlight);
+            selectionHighlight.gameObject.SetActive(false);
+            selectionHighlight.color = new Color(1, 1, 1, 1);
+        }
+        
+        DOTween.Kill(canonSprite.transform);
+        DOTween.Kill(transform);
+        DOTween.Kill(muzzleRenderer.transform);
+        if (muzzleRenderer.material != null)
+        {
+            DOTween.Kill(muzzleRenderer.material);
+        }
+        
+        bulletSprite = null;
+        _busColor = BusColor.None;
+        
+        Debug.Log($"Canon {gameObject.name} đã được reset hoàn toàn!");
+    }
+
     public void CanonSpriteConfig(CanonVisualData data) 
     {
         bottom.sprite = data.bottomSprite;
@@ -54,15 +137,14 @@ public class Canon : MonoBehaviour
         SetUpAnimation();
     }
 
-
     private void SetUpAnimation() 
     {
         transform.localScale = Vector3.one;
         Sequence SetupRecoil = DOTween.Sequence();
         SetupRecoil.Append(canonSprite.transform.DOScale(Vector3.zero, 0.1f).SetEase(Ease.OutQuad));
         SetupRecoil.Append(canonSprite.transform.DOScale(Vector3.one*0.75f, 0.25f).SetEase(Ease.InOutBounce));
-        
     }
+
     public void CanonFire() 
     {
         Vector3 screenLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0));
@@ -97,17 +179,25 @@ public class Canon : MonoBehaviour
             canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
         }
     }
+
     public void StartFiringLoop(int AmmoAmount)
     {
+        if (firingRoutine != null) 
+        {
+            StopCoroutine(firingRoutine);
+            firingRoutine = null;
+        }
+        
+        isFiring = false;
         _currAmmo = AmmoAmount;
-        if (firingRoutine != null) StopCoroutine(firingRoutine);
         firingRoutine = StartCoroutine(FiringLoop());
+        Debug.Log($"Canon bắt đầu bắn với {AmmoAmount} viên đạn");
     }
 
     public void SetLayer(bool Higher)
     {
-        bottom.sortingOrder = Higher ? 60 : 20; // Đặt layer cho bottom sprite
-        canonSprite.sortingOrder = Higher ? 65 : 25 ; // Đặt layer cho canon sprite
+        bottom.sortingOrder = Higher ? 60 : 20;
+        canonSprite.sortingOrder = Higher ? 65 : 25 ;
     }
 
     IEnumerator FiringLoop()
@@ -125,7 +215,6 @@ public class Canon : MonoBehaviour
 
             if (target != null && !isFiring && GameManager.Instance.gameState == GameState.Playing)
             {
-                
                 isFiring = true;
                 target.targetLocked = true;
                 Vector2 dir = (target.gameObject.transform.position - firePoint.position).normalized;
@@ -133,7 +222,6 @@ public class Canon : MonoBehaviour
                 canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, targetAngle - 90f);
                 CanonFireAnimation(() =>
                 {
-                    // CannonFire Process
                     PlayFlash(); 
                     
                     Bullet bullet = Pool.Instance.bulletEffect;
@@ -157,23 +245,22 @@ public class Canon : MonoBehaviour
                 canonSprite.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
             }
 
-            yield return new WaitForSeconds(fireCooldown); // delay giữa các lần check/bắn
+            yield return new WaitForSeconds(fireCooldown);
         }
     }
 
     public void PlayFlash()
     {
         muzzleRenderer.enabled = true;
-        muzzleRenderer.material.color = new Color(1, 1, 1, 1); // Reset alpha
+        muzzleRenderer.material.color = new Color(1, 1, 1, 1);
 
-        // Scale to larger size and then shrink back
         muzzleRenderer.transform.localScale = Vector3.one * flashScale;
 
         Sequence muzzleSeq = DOTween.Sequence();
-        Material muzzleMaterial = muzzleRenderer.material; // Access the material of the SpriteRenderer
-        muzzleSeq.Append(muzzleMaterial.DOFade(0f, flashDuration).SetEase(Ease.OutQuad)); // Fade Out
-        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad)); // Scale back to original
-        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false); // Disable after completion
+        Material muzzleMaterial = muzzleRenderer.material;
+        muzzleSeq.Append(muzzleMaterial.DOFade(0f, flashDuration).SetEase(Ease.OutQuad));
+        muzzleSeq.Join(muzzleRenderer.transform.DOScale(Vector3.one, flashDuration).SetEase(Ease.OutQuad));
+        muzzleSeq.OnComplete(() => muzzleRenderer.enabled = false);
     }
 
     private SnakeSegment GetTargetInFront()
@@ -198,13 +285,10 @@ public class Canon : MonoBehaviour
             SnakeSegment body = hit.GetComponent<SnakeSegment>();
             if (body == null) continue;
 
-            // So màu
             if (body.busColor != _busColor) continue;
 
-            // Nếu đã bị khóa bởi súng khác
             if (body.targetLocked) continue;
 
-            // Lấy target có index nhỏ nhất
             if (body.index < lowestIndex)
             {
                 bestTarget = body;
@@ -224,7 +308,7 @@ public class Canon : MonoBehaviour
         float fireWidth = Mathf.Abs(screenRight.x - screenLeft.x);
 
         float centerX = (screenLeft.x + screenRight.x) / 2f;
-        float centerY = transform.position.y + fireHeight / 2f; // ← đổi y
+        float centerY = transform.position.y + fireHeight / 2f;
 
         Vector2 boxCenterWorld = new Vector2(centerX, centerY);
         Vector2 boxSize = new Vector2(fireWidth, fireHeight);
@@ -234,9 +318,6 @@ public class Canon : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(boxCenterWorld, boxSize);
     }
-
-
-
 
     public void CanonFireAnimation(System.Action onComplete = null)
     {
@@ -250,6 +331,12 @@ public class Canon : MonoBehaviour
 
     public void DoneAnimation() 
     {
+        if (firingRoutine != null)
+        {
+            StopCoroutine(firingRoutine);
+            firingRoutine = null;
+        }
+        
         Sequence DoneRecoil = DOTween.Sequence();
         DoneRecoil.Append(transform.DOScale(Vector3.one, 0.1f).SetEase(Ease.OutQuad));
         DoneRecoil.Append(transform.DOScale(Vector3.zero, 0.2f).SetEase(Ease.OutCubic));
@@ -260,5 +347,4 @@ public class Canon : MonoBehaviour
             gameObject.SetActive(false);
         });
     }
-    
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 
-public class SnakeSegment : GenericPoolableObject , IColorBody
+public class SnakeSegment : GenericPoolableObject, IColorBody
 {
     [Header("Segment Settings")]
     public int segmentIndex;
@@ -26,7 +26,7 @@ public class SnakeSegment : GenericPoolableObject , IColorBody
     public BusColor busColor { get; set; }
     public bool targetLocked { get; set; } // THÊM MỚI: Thuộc tính để xác định xem đối tượng có bị khóa mục tiêu hay không
     public int index { get; set; } // THÊM MỚI: Thuộc tính index để xác định vị trí của đối tượng trong chuỗi
-    public void OnHit() 
+    public void OnHit()
     {
         DestroySegment();
 
@@ -54,10 +54,20 @@ public class SnakeSegment : GenericPoolableObject , IColorBody
     void OnDestroy()
     {
         // Clean up tweeners
+        CleanupAnimations();
+    }
+
+    // FIX: Thêm method cleanup animations
+    void CleanupAnimations()
+    {
         if (positionTweener != null && positionTweener.IsActive())
         {
             positionTweener.Kill();
+            positionTweener = null;
         }
+
+        // Kill any other animations on this transform
+        DOTween.Kill(transform);
     }
 
     void OnMouseEnter()
@@ -90,10 +100,7 @@ public class SnakeSegment : GenericPoolableObject , IColorBody
         isDestroyed = true;
 
         // Kill any active movement tweeners
-        if (positionTweener != null && positionTweener.IsActive())
-        {
-            positionTweener.Kill();
-        }
+        CleanupAnimations();
 
         transform.DOScale(Vector3.zero, destroyAnimationDuration)
             .SetEase(destroyEase)
@@ -110,6 +117,44 @@ public class SnakeSegment : GenericPoolableObject , IColorBody
         {
             // spriteRenderer.DOColor(Color.red, destroyAnimationDuration * 0.5f);
         }
+    }
+
+    // FIX: Override ReturnToPool để cleanup animations trước khi return
+    public override void ReturnToPool()
+    {
+        // Cleanup tất cả animations trước khi return to pool
+        CleanupAnimations();
+
+        // Reset về trạng thái ban đầu
+        ResetToDefaultState();
+
+        // Gọi base method
+        base.ReturnToPool();
+    }
+
+    // FIX: Method reset về trạng thái ban đầu
+    void ResetToDefaultState()
+    {
+        isDestroyed = false;
+        isFlippedY = false;
+
+        // Reset transform
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
+
+        // Reset sprite
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.white;
+            spriteRenderer.flipY = false;
+        }
+
+        // Reset parent
+        transform.parent = null;
+
+        // FIX: Reset canon targeting state
+        targetLocked = false;
+        index = -1;
     }
 
     public void SetSegmentIndex(int ind)

@@ -59,8 +59,9 @@ public class Snake : MonoBehaviour
     private bool isAtEndPoint = false;
     private float endPointTimer = 0f;
     private bool gameEnded = false;
-    private bool hasReachedMiddle = false; // Đã đến giữa path chưa
-    private bool canCheckWinLose = false; // Có thể kiểm tra win/lose chưa
+    private bool hasReachedMiddle = false;
+    private bool canCheckWinLose = false;
+    private bool isInitialized = false;
 
     private void OnEnable()
     {
@@ -72,22 +73,89 @@ public class Snake : MonoBehaviour
         GameEvents.GameStart -= OnGameStart;
     }
 
-
     void OnGameStart()
     {
-        Invoke(nameof(InitializeSnake), 0.2f);
+        if (!isInitialized)
+        {
+            StartCoroutine(WaitForPathCreatorAndInitialize());
+        }
+    }
+
+    private System.Collections.IEnumerator WaitForPathCreatorAndInitialize()
+    {
+        Debug.Log("Đang đợi SnakePathCreator...");
+
+        while (pathCreator == null)
+        {
+            pathCreator = GetComponent<SnakePathCreator>();
+
+            if (pathCreator == null && transform.parent != null)
+            {
+                pathCreator = GetComponentInParent<SnakePathCreator>();
+            }
+
+            if (pathCreator == null)
+            {
+                pathCreator = GetComponentInChildren<SnakePathCreator>();
+            }
+
+            if (pathCreator == null)
+            {
+                pathCreator = FindObjectOfType<SnakePathCreator>();
+            }
+
+            yield return null;
+        }
+
+        Debug.Log($"Tìm thấy SnakePathCreator: {pathCreator.name}, đang đợi khởi tạo...");
+
+        yield return null;
+
+        int maxRetries = 200;
+        int retryCount = 0;
+
+        while (retryCount < maxRetries)
+        {
+            if (!pathCreator.IsInitialized())
+            {
+                pathCreator.InitializePath();
+            }
+
+            if (pathCreator.GetPathPositions() != null && pathCreator.GetPathPositions().Length > 1)
+            {
+                Debug.Log("SnakePathCreator đã sẵn sàng, bắt đầu khởi tạo rắn!");
+                InitializeSnake();
+                yield break;
+            }
+
+            retryCount++;
+            yield return null;
+        }
+
+        Debug.LogError("Timeout: SnakePathCreator không khởi tạo được sau 200 frames!");
+    }
+
+    public void ForceInitialize()
+    {
+        if (!isInitialized && pathCreator != null)
+        {
+            InitializeSnake();
+        }
+        else if (pathCreator == null)
+        {
+            StartCoroutine(WaitForPathCreatorAndInitialize());
+        }
     }
 
     void Update()
     {
-        if(GameManager.Instance.gameState != GameState.Playing) return;
+        if (GameManager.Instance.gameState != GameState.Playing) return;
         HandleInput();
         if (isMoving && segments.Count > 0 && pathPositions != null)
         {
             MoveSnake();
         }
-        
-        // Kiểm tra điều kiện thắng/thua
+
         CheckWinLoseConditions();
     }
 
@@ -107,13 +175,53 @@ public class Snake : MonoBehaviour
 
     void InitializeSnake()
     {
-        if (pathCreator == null)
+        if (isInitialized)
         {
-            Debug.LogError("Cần gán SnakePathCreator trong Inspector!");
+            Debug.Log("Rắn đã được khởi tạo, bỏ qua việc khởi tạo lại.");
             return;
         }
 
-        pathCreator.InitializePath();
+        Debug.Log("Bắt đầu khởi tạo rắn...");
+
+        if (pathCreator == null)
+        {
+            Debug.LogWarning("PathCreator is null! Trying to find it...");
+
+            pathCreator = GetComponent<SnakePathCreator>();
+
+            if (pathCreator == null && transform.parent != null)
+            {
+                pathCreator = GetComponentInParent<SnakePathCreator>();
+            }
+
+            if (pathCreator == null)
+            {
+                pathCreator = GetComponentInChildren<SnakePathCreator>();
+            }
+
+            if (pathCreator == null)
+            {
+                pathCreator = FindObjectOfType<SnakePathCreator>();
+            }
+
+            if (pathCreator != null)
+            {
+                Debug.Log($"Đã tìm thấy SnakePathCreator: {pathCreator.name}");
+            }
+        }
+
+        if (pathCreator == null)
+        {
+            Debug.LogError("Không tìm thấy SnakePathCreator trong scene!");
+            return;
+        }
+
+        if (!pathCreator.IsInitialized())
+        {
+            Debug.Log("PathCreator chưa khởi tạo, đang khởi tạo...");
+            pathCreator.InitializePath();
+        }
+
         pathPositions = pathCreator.GetPathPositions();
         pathRotations = pathCreator.GetPathRotations();
         pathLength = pathCreator.GetPathLength();
@@ -135,6 +243,48 @@ public class Snake : MonoBehaviour
         GenerateSegmentSequence();
         CreateSnakeSegments();
         InitializeRotationCache();
+
+        isInitialized = true;
+        Debug.Log($"Rắn đã được khởi tạo thành công với {segments.Count} đốt!");
+    }
+
+    // THÊM MỚI: Hàm xóa các đốt rắn theo màu và số lượng
+    public void RemoveSegmentsByColorAndCount(BusColor color, int count)
+    {
+        Debug.Log($"Xóa {count} đốt rắn màu {color}");
+
+        if (segments == null || segments.Count == 0)
+        {
+            Debug.LogWarning("Không có segments để xóa!");
+            return;
+        }
+
+        // Tìm tất cả segments có màu tương ứng (loại trừ đầu và đuôi)
+        var targetSegments = segments.Where(s => s != null &&
+                                                !s.IsDestroyed() &&
+                                                s.busColor == color &&
+                                                s.GetSegmentType().IsDestructible())
+                                   .OrderBy(s => s.segmentIndex) // Xóa từ đầu về cuối
+                                   .Take(count) // Lấy đúng số lượng cần xóa
+                                   .ToList();
+
+        Debug.Log($"Tìm thấy {targetSegments.Count} đốt màu {color} để xóa");
+
+        // Xóa từng segment
+        foreach (var segment in targetSegments)
+        {
+            if (segment != null && !segment.IsDestroyed())
+            {
+                Debug.Log($"Xóa segment index {segment.segmentIndex} màu {segment.busColor}");
+                segment.DestroySegment();
+            }
+        }
+
+        // Cập nhật lại vị trí các segments còn lại
+        DOVirtual.DelayedCall(0.1f, () =>
+        {
+            UpdateAllSegmentPositions();
+        });
     }
 
     void InitializeRotationCache()
@@ -172,14 +322,28 @@ public class Snake : MonoBehaviour
         }
 
         segmentSequence.Add(SegmentType.Tail);
+
+        Debug.Log($"Generated segment sequence: {string.Join(", ", segmentSequence)}");
     }
 
     void CreateSnakeSegments()
     {
+        Debug.Log($"Tạo {segmentSequence.Count} đốt rắn...");
+
         for (int i = 0; i < segmentSequence.Count; i++)
         {
             SegmentType segmentType = segmentSequence[i];
             SnakeSegment segment = Pool.Instance.segment;
+
+            if (segment == null)
+            {
+                Debug.LogError($"Không thể lấy segment từ pool cho index {i}!");
+                continue;
+            }
+
+            segment.ReturnToPool();
+            segment = Pool.Instance.segment;
+
             segment.SetSegmentIndex(i);
             segment.SetSegmentType(dragonSpriteData.GetVisualData(segmentType).dragonSegment);
             segment.busColor = ToBusColor(segmentType);
@@ -191,6 +355,8 @@ public class Snake : MonoBehaviour
             segment.gameObject.transform.parent = transform;
             segments.Add(segment);
             segment.gameObject.name = $"Segment_{i}_{segmentType}";
+
+            Debug.Log($"Tạo segment {i}: {segmentType} tại vị trí {startPos}");
         }
 
         UpdateSegmentSortingOrders();
@@ -229,7 +395,6 @@ public class Snake : MonoBehaviour
     {
         if (pathPositions == null || pathLength <= 0) return;
 
-        // Kiểm tra xem đã đến giữa path chưa
         if (!hasReachedMiddle && currentPathProgress >= 0.5f)
         {
             hasReachedMiddle = true;
@@ -237,16 +402,13 @@ public class Snake : MonoBehaviour
             Debug.Log("Rắn đã đến giữa path! Chuyển sang tốc độ bình thường và bắt đầu tính win/lose.");
         }
 
-        // Chọn tốc độ dựa trên vị trí hiện tại
         float currentSpeed;
         if (!hasReachedMiddle)
         {
-            // Chưa đến giữa path - dùng tốc độ ban đầu
             currentSpeed = isReversing ? initialSpeed : initialSpeed;
         }
         else
         {
-            // Đã đến giữa path - dùng tốc độ bình thường
             currentSpeed = isReversing ? normalSpeed : normalSpeed;
         }
 
@@ -466,60 +628,49 @@ public class Snake : MonoBehaviour
         }
     }
 
-    // ============ WIN/LOSE FUNCTIONS ============
-
-    // Hàm kiểm tra điều kiện thắng/thua
     void CheckWinLoseConditions()
     {
-        // Chỉ kiểm tra win/lose sau khi đã đến giữa path
         if (gameEnded || !canCheckWinLose) return;
-        
+
         CheckWinCondition();
         CheckLoseCondition();
     }
 
-    // Hàm kiểm tra điều kiện thắng - chỉ cần hết các đốt thân (không tính đầu và đuôi)
     void CheckWinCondition()
     {
-        // Sử dụng hàm có sẵn để đếm số đốt có thể phá hủy còn lại
-        // Hàm này đã loại trừ đầu và đuôi rắn
         int destructibleSegments = GetDestructibleSegmentCount();
-        
-       
-        
+
         if (destructibleSegments <= 2)
         {
+            UIManager.Instance.OpenUI<UIWIN>();
             Debug.Log("WIN");
             gameEnded = true;
             OnWin();
         }
     }
 
-    // Hàm kiểm tra điều kiện thua
     void CheckLoseCondition()
     {
         if (pathPositions == null || pathPositions.Length == 0) return;
-        
-        // Kiểm tra xem rắn có đang ở điểm cuối không (currentPathProgress >= 1.0f)
+
         bool currentlyAtEndPoint = currentPathProgress >= 1.0f;
-        
+
         if (currentlyAtEndPoint)
         {
             if (!isAtEndPoint)
             {
-                // Vừa mới đến điểm cuối, bắt đầu đếm thời gian
                 isAtEndPoint = true;
                 endPointTimer = 0f;
                 Debug.Log("Rắn đã đến điểm cuối, bắt đầu đếm thời gian...");
             }
             else
             {
-                // Đang ở điểm cuối, tăng timer
                 endPointTimer += Time.deltaTime;
                 Debug.Log($"Đang đếm thời gian tại điểm cuối: {endPointTimer:F1}/{endPointWaitTime}s");
-                
+
                 if (endPointTimer >= endPointWaitTime)
                 {
+                    UIManager.Instance.OpenUI<UILOSE>();
                     Debug.Log("THUA");
                     gameEnded = true;
                     OnLose();
@@ -530,7 +681,6 @@ public class Snake : MonoBehaviour
         {
             if (isAtEndPoint)
             {
-                // Rắn đã rời khỏi điểm cuối, reset timer
                 isAtEndPoint = false;
                 endPointTimer = 0f;
                 Debug.Log("Rắn đã rời khỏi điểm cuối, reset timer");
@@ -538,23 +688,41 @@ public class Snake : MonoBehaviour
         }
     }
 
-    // Hàm được gọi khi thắng
     void OnWin()
     {
         StopSnake();
-        // Thêm logic xử lý khi thắng ở đây
-        // Ví dụ: hiển thị UI thắng, chuyển level, etc.
     }
 
-    // Hàm được gọi khi thua
     void OnLose()
     {
         StopSnake();
-        // Thêm logic xử lý khi thua ở đây
-        // Ví dụ: hiển thị UI thua, restart game, etc.
     }
 
-    // Hàm reset game state (có thể gọi khi restart)
+    public void DestroySnake()
+    {
+        Debug.Log("Đang xóa rắn...");
+
+        DOTween.Kill(transform);
+
+        foreach (var segment in segments)
+        {
+            if (segment != null)
+            {
+                segment.ReturnToPool();
+            }
+        }
+
+        segments.Clear();
+        segmentCurrentRotations.Clear();
+        segmentFlipStates.Clear();
+        segmentSequence.Clear();
+
+        ResetGameState();
+        isInitialized = false;
+
+        Debug.Log("Đã xóa rắn hoàn toàn!");
+    }
+
     public void ResetGameState()
     {
         gameEnded = false;
@@ -563,9 +731,10 @@ public class Snake : MonoBehaviour
         hasReachedMiddle = false;
         canCheckWinLose = false;
         currentPathProgress = 0f;
+        isMoving = true;
+        isReversing = false;
+        Debug.Log("Đã reset game state - currentPathProgress reset về 0!");
     }
-
-    // ============ PUBLIC METHODS ============
 
     public void StopSnake() => isMoving = false;
     public void StartSnake() => isMoving = true;
@@ -576,6 +745,7 @@ public class Snake : MonoBehaviour
     public void ForceReverse() => isReversing = true;
     public bool HasReachedMiddle() => hasReachedMiddle;
     public bool CanCheckWinLose() => canCheckWinLose;
+    public bool IsInitialized() => isInitialized;
 
     public List<SegmentType> GetSegmentTypes()
     {
@@ -589,7 +759,6 @@ public class Snake : MonoBehaviour
         return segments.Count(s => s != null && !s.IsDestroyed() && s.GetSegmentType().IsDestructible());
     }
 
-    // New public method to get the snake's progress
     public float GetCurrentPathProgress()
     {
         return currentPathProgress;

@@ -52,6 +52,12 @@ public class SnakePathCreator : MonoBehaviour
         isInitialized = true;
     }
 
+    // FIX: Thêm method để check trạng thái khởi tạo
+    public bool IsInitialized()
+    {
+        return isInitialized && pathPositions != null && pathPositions.Length > 1;
+    }
+
     void CreatePath()
     {
         if (pathPoints == null || pathPoints.Length < 2)
@@ -135,6 +141,8 @@ public class SnakePathCreator : MonoBehaviour
             pathLineRenderer.endWidth = pathWidth;
             pathLineRenderer.useWorldSpace = true;
         }
+
+        Debug.Log($"SnakePathCreator initialized with {pathPositions.Length} path points");
     }
 
     void CreateDefaultPath()

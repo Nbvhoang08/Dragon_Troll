@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using  DG.Tweening;
+using DG.Tweening;
 using System.Linq;
 public class Bus : GenericPoolableObject
 {
@@ -12,13 +12,13 @@ public class Bus : GenericPoolableObject
     private bool isShaking = false;
 
     [Header("Path Points")]
-    public Vector2 intersection; 
+    public Vector2 intersection;
     public Slot targetSlot;
 
     [Header("Move Settings")]
     public float raycastDistance = 20f;
     public float moveSpeed = 5f;
-    [SerializeField]private List<Vector3> _finalPath;
+    [SerializeField] private List<Vector3> _finalPath;
 
     private int _currentIndex = 0;
     private Vector3 startPosition;
@@ -40,7 +40,7 @@ public class Bus : GenericPoolableObject
         targetSlot = GameManager.Instance.ValidSlot();
         if (targetSlot == null)
         {
-            Debug.LogWarning("Không tìm thấy slot hợp lệ!");
+            UIDebugText.ShowMessage("Không tìm thấy slot hợp lệ!");
             return;
         }
         SoundManager.Instance.Play(Constants.BoxClickSound);
@@ -50,13 +50,13 @@ public class Bus : GenericPoolableObject
         Vector2 end = origin + direction * raycastDistance;
         if (IsOnConveyor)
         {
-            startPosition = transform.position; 
+            startPosition = transform.position;
         }
 
-        if(GameManager.Instance.gameState == GameState.Slip) 
+        if (GameManager.Instance.gameState == GameState.Slip)
         {
-            _collider.enabled = false; 
-            GameManager.Instance.SlipDone(); 
+            _collider.enabled = false;
+            GameManager.Instance.SlipDone();
         }
         RaycastHit2D hit = Physics2D.Linecast(origin, end, LayerMask.GetMask("Road"));
 
@@ -82,7 +82,7 @@ public class Bus : GenericPoolableObject
         Vector3 target3D = new Vector3(target.x, target.y, transform.position.z);
         float distance = Vector3.Distance(transform.position, target3D);
         float duration = distance / moveSpeed;
-        if(IsOnConveyor)
+        if (IsOnConveyor)
             GameEvents.ConveyorRun?.Invoke(true); // Thông báo bắt đầu di chuyển
         transform.DOMove(target3D, duration)
             .SetEase(Ease.Linear)
@@ -112,7 +112,7 @@ public class Bus : GenericPoolableObject
             return intersection.Value;
 
         Debug.LogWarning("Không tìm được giao điểm với center line!");
-        return rayOrigin; 
+        return rayOrigin;
     }
 
     private Vector2? LineIntersection(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
@@ -128,7 +128,7 @@ public class Bus : GenericPoolableObject
         float denominator = A1 * B2 - A2 * B1;
 
         if (Mathf.Approximately(denominator, 0f))
-            return null; 
+            return null;
 
         float x = (B2 * C1 - B1 * C2) / denominator;
         float y = (A1 * C2 - A2 * C1) / denominator;
@@ -136,17 +136,17 @@ public class Bus : GenericPoolableObject
         return new Vector2(x, y);
     }
 
-    void startMovePath() 
+    void startMovePath()
     {
         _finalPath = CalculateShortestPath();
         if (_finalPath == null || _finalPath.Count == 0)
-        { 
+        {
             isMoving = false;
             DOTween.Kill(transform);
             return;
         }
         _collider.enabled = false; // Vô hiệu hóa collider trong quá trình di chuyển
-   
+
         MoveAlongPath();
     }
 
@@ -162,7 +162,7 @@ public class Bus : GenericPoolableObject
         foreach (Transform cp in GameManager.Instance.checkpoints)
         {
             Vector3 cpWorld = ToWorldPosition(cp);
-            allPaths.Add(new List<Vector3> { start, cpWorld , endLower, end });
+            allPaths.Add(new List<Vector3> { start, cpWorld, endLower, end });
         }
 
         for (int i = 0; i < GameManager.Instance.checkpoints.Count; i++)
@@ -182,14 +182,14 @@ public class Bus : GenericPoolableObject
         {
             for (int i = 0; i < path.Count - 1; i++)
             {
-                if (!IsAxisAligned(path[i], path[i + 1])) 
+                if (!IsAxisAligned(path[i], path[i + 1]))
                     return false;
-                
+
             }
             return true;
         }).ToList();
 
-    
+
         float minDistance = float.MaxValue;
         List<Vector3> shortest = null;
 
@@ -226,7 +226,7 @@ public class Bus : GenericPoolableObject
         MoveToNextPoint();
     }
 
-    void MoveToNextPoint()  
+    void MoveToNextPoint()
     {
         if (_currentIndex >= _finalPath.Count - 1)
         {
@@ -241,8 +241,8 @@ public class Bus : GenericPoolableObject
             {
                 GameEvents.ConveyorRun?.Invoke(false);
             }
-            if(IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this); 
-            if (wareHouse != null) 
+            if (IsOnConveyor) GameEvents.ConveyorBusListUpdate?.Invoke(this);
+            if (wareHouse != null)
             {
                 wareHouse.NextBus();
             }
@@ -256,7 +256,7 @@ public class Bus : GenericPoolableObject
         Vector3 direction = (to - from).normalized;
         Quaternion targetRot = Quaternion.FromToRotation(Vector3.up, direction); // từ up -> direction
 
-        transform.DORotateQuaternion(targetRot, 0.01f).OnComplete(()=>_busVisual.VisualConfig());
+        transform.DORotateQuaternion(targetRot, 0.01f).OnComplete(() => _busVisual.VisualConfig());
 
         transform.DOMove(to, duration).SetEase(Ease.Linear).OnComplete(() =>
         {
@@ -267,23 +267,23 @@ public class Bus : GenericPoolableObject
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-       
+
         if (isShaking) return;
         DOTween.Kill(transform);
-        
-        if (!isMoving) 
+
+        if (!isMoving)
         {
             isShaking = true;
             transform.DOShakePosition(shakeDuration, shakeStrength)
             .OnComplete(() =>
             {
                 isShaking = false;
-               
+
             });
         }
-        else 
+        else
         {
-            targetSlot?.SetOccupied(false); 
+            targetSlot?.SetOccupied(false);
             targetSlot = null;
             if (isMoving)
             {

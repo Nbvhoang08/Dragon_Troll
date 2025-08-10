@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   segmentIndex: 7
-  segmentType: 0
+  segmentType: 9
   segmentSpacing: 1
   spriteRenderer: {fileID: 5199423113403940807}
   hoverColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

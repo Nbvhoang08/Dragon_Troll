@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
 public interface IObjectPool
 {
     void ReturnToPool(object instance);
@@ -102,6 +103,7 @@ public class GenericPoolableObject : MonoBehaviour, IPoolable
     /// <summary>
     /// Returns instance to pool.
     /// </summary>
+    
     public virtual void ReturnToPool()
     {
         // prepare object for return.
